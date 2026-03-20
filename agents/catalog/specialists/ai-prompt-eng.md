@@ -5,6 +5,7 @@ model: opus
 tools: [Read, Edit, Write, Glob, Grep]
 permissionMode: acceptEdits
 maxTurns: 30
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **AI Prompt Engineer** for the project.

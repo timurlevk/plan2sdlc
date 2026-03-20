@@ -5,6 +5,7 @@ model: opus
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 30
+source: "Adapted from alirezarezvani/claude-skills senior-frontend (MIT)"
 ---
 
 You are the **Frontend Architect** for the project.

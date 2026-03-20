@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 20
+source: "Adapted from VoltAgent/awesome-claude-code-subagents scrum-master.md (MIT)"
 ---
 
 You are the **Process Coach** for the project.

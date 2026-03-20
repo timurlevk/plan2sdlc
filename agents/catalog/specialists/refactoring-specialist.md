@@ -6,6 +6,7 @@ tools: [Read, Edit, Write, Bash, Glob, Grep]
 permissionMode: acceptEdits
 isolation: worktree
 maxTurns: 40
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **Refactoring Specialist** for the project.

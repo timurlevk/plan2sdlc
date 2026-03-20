@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **UI Designer** for the project.

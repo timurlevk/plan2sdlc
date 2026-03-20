@@ -7,6 +7,7 @@ permissionMode: plan
 maxTurns: 20
 template: true
 variables: [topic, expertise]
+source: "Adapted from alirezarezvani/claude-skills agents/template.md (MIT)"
 ---
 
 You are a **Subject Matter Expert (SME)** in **{{topic}}**.

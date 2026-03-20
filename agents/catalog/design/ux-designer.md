@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Adapted from davepoon/buildwithclaude ui-ux-designer.md (MIT)"
 ---
 
 You are the **UX Designer** for the project.

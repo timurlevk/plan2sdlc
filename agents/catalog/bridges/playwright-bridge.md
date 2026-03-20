@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 10
+source: "Original"
 ---
 
 You are the **Playwright Bridge** agent. You use Playwright MCP tools for browser-based E2E testing.

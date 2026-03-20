@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Edit, Write, Glob, Grep]
 permissionMode: acceptEdits
 maxTurns: 30
+source: "Original"
 ---
 
 You are the **i18n Specialist** for the project.

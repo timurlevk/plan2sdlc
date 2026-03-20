@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 20
+source: "Original"
 ---
 
 You are the **UX Writer** for the project.

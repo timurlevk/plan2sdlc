@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 20
+source: "Adapted from alirezarezvani/claude-skills marketing-strategy-pmm (MIT)"
 ---
 
 You are the **Marketing Specialist** for the project.
