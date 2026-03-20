@@ -260,24 +260,58 @@
       .catch(() => {});
 
     // Parse simple YAML registry (extract agent names)
+    // Parse YAML registry — supports two formats:
+    // Format A (map): "  agent-name:\n    type: developer\n    domain: api\n    status: active"
+    // Format B (list): "  - name: agent-name\n    category: development"
     function parseRegistry(yamlStr) {
       if (!yamlStr) return [];
       const agents = [];
       const lines = yamlStr.split('\n');
       let currentAgent = null;
+      let inAgents = false;
+
       for (const line of lines) {
-        const nameMatch = line.match(/^\s*-?\s*name:\s*(.+)/);
-        if (nameMatch) {
-          currentAgent = { name: nameMatch[1].trim().replace(/['"]/g, '') };
+        // Detect "agents:" section
+        if (line.match(/^agents:\s*$/)) { inAgents = true; continue; }
+        if (!inAgents) continue;
+        // Skip comments
+        if (line.trim().startsWith('#') || line.trim() === '') continue;
+        // Exit agents section on non-indented non-comment line
+        if (inAgents && line.match(/^\S/) && !line.match(/^agents:/)) { inAgents = false; continue; }
+
+        // Format A: "  agent-name:" (2-space indent, key with colon, no value or sub-key)
+        const mapKeyMatch = line.match(/^  (\w[\w-]*):\s*$/);
+        if (mapKeyMatch) {
+          currentAgent = { name: mapKeyMatch[1], category: 'development', status: 'active' };
           agents.push(currentAgent);
+          continue;
         }
+
+        // Format B: "  - name: value"
+        const listNameMatch = line.match(/^\s*-?\s*name:\s*(.+)/);
+        if (listNameMatch) {
+          currentAgent = { name: listNameMatch[1].trim().replace(/['"]/g, ''), category: 'development', status: 'active' };
+          agents.push(currentAgent);
+          continue;
+        }
+
+        // Parse sub-fields for current agent
         if (currentAgent) {
-          const catMatch = line.match(/^\s*category:\s*(.+)/);
-          if (catMatch) currentAgent.category = catMatch[1].trim().replace(/['"]/g, '');
-          const statusMatch = line.match(/^\s*status:\s*(.+)/);
-          if (statusMatch) currentAgent.status = statusMatch[1].trim().replace(/['"]/g, '');
-          const tierMatch = line.match(/^\s*tier:\s*(.+)/);
-          if (tierMatch) currentAgent.tier = tierMatch[1].trim().replace(/['"]/g, '');
+          const fieldMatch = line.match(/^\s{4,}(\w+):\s*(.+)/);
+          if (fieldMatch) {
+            const [, key, val] = fieldMatch;
+            const v = val.trim().replace(/['"]/g, '');
+            if (key === 'type') {
+              // Map type → category for display
+              const typeMap = { orchestrator: 'governance', developer: 'development', tester: 'testing',
+                governance: 'governance', sme: 'consultant', specialist: 'specialist' };
+              currentAgent.category = typeMap[v] || v;
+            }
+            if (key === 'category') currentAgent.category = v;
+            if (key === 'status') currentAgent.status = v;
+            if (key === 'domain') currentAgent.domain = v;
+            if (key === 'tier') currentAgent.tier = v;
+          }
         }
       }
       return agents;
