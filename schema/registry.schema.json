@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-sdlc.dev/schema/registry.schema.json",
+  "title": "SDLC Agent Registry",
+  "description": "Registry of all agents available to the claude-sdlc plugin",
+  "type": "object",
+  "required": ["agents"],
+  "additionalProperties": false,
+  "properties": {
+    "agents": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/AgentEntry" }
+    }
+  },
+  "definitions": {
+    "AgentEntry": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "category",
+        "tier",
+        "model",
+        "tools",
+        "domains",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "governance",
+            "development",
+            "testing",
+            "design",
+            "product",
+            "business",
+            "specialist",
+            "consultant",
+            "bridge"
+          ]
+        },
+        "tier": {
+          "type": "string",
+          "enum": [
+            "mandatory",
+            "auto-detected",
+            "governance-requested",
+            "user-requested"
+          ]
+        },
+        "model": {
+          "type": "string"
+        },
+        "tools": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "domains": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "idle", "disabled"]
+        },
+        "metrics": {
+          "$ref": "#/definitions/AgentMetrics"
+        }
+      }
+    },
+    "AgentMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "totalSessions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "successRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "avgCost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "avgTurns": {
+          "type": "number",
+          "minimum": 0
+        },
+        "retryRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "lastUsed": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trend": {
+          "type": "string",
+          "enum": ["improving", "stable", "declining"]
+        }
+      }
+    }
+  }
+}

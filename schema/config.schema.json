@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-sdlc.dev/schema/config.schema.json",
+  "title": "SDLC Plugin Config",
+  "description": "Configuration for the claude-sdlc plugin",
+  "type": "object",
+  "required": ["project", "workflow", "budget", "hitl", "git"],
+  "additionalProperties": false,
+  "properties": {
+    "project": {
+      "$ref": "#/definitions/ProjectConfig"
+    },
+    "domains": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/DomainConfig"
+      }
+    },
+    "workflow": {
+      "$ref": "#/definitions/WorkflowConfig"
+    },
+    "triggers": {
+      "$ref": "#/definitions/TriggersConfig"
+    },
+    "budget": {
+      "$ref": "#/definitions/BudgetConfig"
+    },
+    "hitl": {
+      "$ref": "#/definitions/HITLConfig"
+    },
+    "git": {
+      "$ref": "#/definitions/GitConfig"
+    }
+  },
+  "definitions": {
+    "ProjectConfig": {
+      "type": "object",
+      "required": ["name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": ["auto", "monorepo", "single-app", "microservices"]
+        },
+        "techStack": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "DomainConfig": {
+      "type": "object",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "techStack": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rules": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "claudeMd": {
+          "type": "string"
+        }
+      }
+    },
+    "WorkflowConfig": {
+      "type": "object",
+      "required": ["maxRetries"],
+      "additionalProperties": false,
+      "properties": {
+        "complexityThresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "S": { "type": "integer", "minimum": 1 },
+            "M": { "type": "integer", "minimum": 1 },
+            "L": { "type": "integer", "minimum": 1 },
+            "XL": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "autoQuickFix": {
+          "type": "boolean"
+        },
+        "autoMerge": {
+          "type": "boolean"
+        },
+        "maxRetries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requireArchReview": {
+          "type": "boolean"
+        }
+      }
+    },
+    "TriggersConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "retro": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cadence": {
+              "type": "string"
+            },
+            "mergeThreshold": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "gapAnalysis": {
+          "type": "string"
+        },
+        "architectureReview": {
+          "type": "string"
+        },
+        "securityReview": {
+          "type": "string"
+        }
+      }
+    },
+    "BudgetConfig": {
+      "type": "object",
+      "required": ["monthlyWarning", "monthlyHardCap"],
+      "additionalProperties": false,
+      "properties": {
+        "perSession": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "monthlyWarning": {
+          "type": "number",
+          "minimum": 0
+        },
+        "monthlyHardCap": {
+          "type": "number",
+          "minimum": 0
+        },
+        "preferredModels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "HITLConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mergeApproval": {
+          "type": "boolean"
+        },
+        "budgetApproval": {
+          "type": "boolean"
+        },
+        "silentMode": {
+          "type": "boolean"
+        }
+      }
+    },
+    "GitConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "releaseBranch": {
+          "type": "string"
+        },
+        "mainBranch": {
+          "type": "string"
+        },
+        "commitPrefix": {
+          "type": "string"
+        },
+        "tagFormat": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
