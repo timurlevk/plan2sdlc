@@ -5,6 +5,17 @@ All notable changes to the claude-sdlc plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-03-21
+
+### Changed
+- Orchestrator v2 — dispatch-only mode, removed superpowers integration table, added subagent dispatch protocol with status codes
+- EXECUTE v2 — per-domain dispatch with TDD discipline and prompt-driven iterative retry (not Stop hook)
+
+### Removed
+- Superpowers integration table from orchestrator
+- Cost tracking references from orchestrator and execute session
+- "With/without superpowers" branching from execute session
+
 ## [0.3.0] - 2026-03-21
 
 ### Added
