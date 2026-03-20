@@ -1,0 +1,13 @@
+{
+  "preferences": {
+    "autoQuickFix": true,
+    "autoMerge": false,
+    "silentMode": false,
+    "maxConcurrentWorkflows": 3,
+    "preferredModels": {
+      "governance": "opus",
+      "development": "sonnet",
+      "testing": "sonnet"
+    }
+  }
+}

@@ -148,6 +148,79 @@ claude-sdlc/
 └── integrations/            Optional: Pixel Agents visual dashboard
 ```
 
+## Examples
+
+### Bug fix (auto-classified as QUICK_FIX)
+```
+You: "fix the login redirect loop in api"
+
+Orchestrator:
+  Task: TASK-001 — Fix the login redirect loop in api
+  Type: bugfix | Complexity: S | Domain: api
+  Chain: QUICK_FIX → MERGE
+  Team: api-developer
+  Cost: ~$1.00
+
+  → api-developer fixes in worktree
+  → Tests pass
+  → MERGE: approve? [y/n]
+  → Done. Backlog updated.
+```
+
+### Feature (auto-classified as L)
+```
+You: "add daily rewards system with streak bonuses"
+
+Orchestrator:
+  Task: TASK-002 — Add daily rewards system with streak bonuses
+  Type: feature | Complexity: L | Domains: api, web
+  Chain: BRAINSTORM → PLAN → EXECUTE → REVIEW → INTEGRATION_CHECK → MERGE
+  Estimated cost: $12-18
+
+  ⚠ Cost Estimate — Continue? [y/n]
+
+  → BRAINSTORM: architect + you design the spec
+  → PLAN: decompose into domain tasks
+  → EXECUTE: api-developer + web-developer in parallel worktrees
+  → REVIEW: governance-reviewer checks quality
+  → INTEGRATION_CHECK: cross-domain tests
+  → MERGE: approve? [y/n]
+```
+
+### Hotfix (emergency bypass)
+```
+You: "/sdlc hotfix production login page crashes"
+
+Orchestrator:
+  HOTFIX MODE — skipping BRAINSTORM, PLAN, ARCH_REVIEW
+  Fast triage → Fix → Smoke tests → HITL merge (always)
+  Branch: hotfix/login-page-crash from main
+
+  → Fix applied, smoke tests pass
+  → Merge to main? [y/n]
+  → Auto-created: POST_MORTEM task, GAP_ANALYSIS task
+```
+
+### Status check
+```
+You: "/sdlc status"
+
+BACKLOG (3 items)
+─────────────────────────────────────────────────────
+TASK-003  [M] feature   high    "User profile page"       executing
+TASK-004  [S] bugfix    medium  "Tooltip overflow"        inbox
+TASK-005  [L] feature   medium  "Leaderboard redesign"    planned
+
+ACTIVE WORKFLOWS
+─────────────────────────────────────────────────────
+WF-002  TASK-003  EXECUTE → web-developer
+
+RECENT (last 7 days)
+─────────────────────────────────────────────────────
+TASK-001  [S] bugfix   done  "Login redirect loop"  $0.80  1 session
+TASK-002  [L] feature  done  "Daily rewards"        $14.20 5 sessions
+```
+
 ## Requirements
 
 - Claude Code 1.0.0+
