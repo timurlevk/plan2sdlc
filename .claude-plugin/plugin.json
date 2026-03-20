@@ -2,36 +2,48 @@
   "name": "claude-sdlc",
   "version": "0.1.0",
   "description": "Full SDLC governance for Claude Code — orchestrator, agent teams, workflow engine",
-  "author": "plan2skill",
+  "author": {
+    "name": "Plan2Skill",
+    "email": "plugins@plan2skill.com"
+  },
   "license": "MIT",
   "homepage": "https://github.com/plan2skill/plan2sdlc",
+  "repository": "https://github.com/plan2skill/plan2sdlc",
   "claude-code-min-version": "1.0.0",
   "experimental": true,
   "keywords": ["sdlc", "governance", "workflow", "agents", "orchestrator"],
-  "skills": [
-    "sdlc-init",
-    "sdlc-dispatch",
-    "sdlc-status",
-    "sdlc-triage",
-    "sdlc-retro",
-    "sdlc-release",
-    "sdlc-cost",
-    "sdlc-team",
-    "sdlc-hotfix",
-    "sdlc-add-agent",
-    "sdlc-add-domain",
-    "sdlc-add-sme",
-    "sdlc-undo",
-    "sdlc-uninstall",
-    "sdlc-enable",
-    "sdlc-help"
-  ],
-  "agents": ["orchestrator"],
+  "skills": "./skills/",
+  "agents": "./agents/",
   "hooks": {
-    "SessionStart": ["hooks/entry-check.js"],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/entry-check.js"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
-      "hooks/sdlc-secrets-guard.js",
-      "hooks/sdlc-write-guard.js"
+      {
+        "matcher": "Read|Edit|Write|Glob|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/sdlc-secrets-guard.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/sdlc-write-guard.js"
+          }
+        ]
+      }
     ]
   }
 }
