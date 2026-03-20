@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Bash, Glob, Grep]
 permissionMode: plan
 maxTurns: 30
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **Security Auditor** for the project.

@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 10
+source: "Original"
 ---
 
 You are the **Code Review Bridge** agent. You delegate code reviews to the code-review plugin when available.

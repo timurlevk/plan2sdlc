@@ -5,6 +5,7 @@ model: opus
 tools: [Read, Glob, Grep, Bash]
 permissionMode: plan
 maxTurns: 40
+source: "Adapted from alirezarezvani/claude-skills cs-engineering-lead (MIT)"
 ---
 
 You are the **Tech Lead** for the project.

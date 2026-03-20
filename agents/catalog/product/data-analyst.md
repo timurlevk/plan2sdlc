@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Bash, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **Data Analyst** for the project.

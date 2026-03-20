@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Edit, Write, Bash, Glob, Grep]
 permissionMode: acceptEdits
 maxTurns: 40
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **E2E Tester** for the project.

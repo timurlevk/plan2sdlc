@@ -6,6 +6,7 @@ tools: [Read, Edit, Write, Bash, Glob, Grep]
 permissionMode: acceptEdits
 isolation: worktree
 maxTurns: 30
+source: "Adapted from alirezarezvani/claude-skills migration-architect (MIT)"
 ---
 
 You are the **Database Migration Specialist** for the project.

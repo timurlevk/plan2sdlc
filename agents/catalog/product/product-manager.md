@@ -5,6 +5,7 @@ model: opus
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 30
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **Product Manager** for the project.

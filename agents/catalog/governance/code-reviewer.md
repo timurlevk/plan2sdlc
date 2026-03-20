@@ -5,6 +5,7 @@ model: opus
 tools: [Read, Glob, Grep, Bash]
 permissionMode: plan
 maxTurns: 30
+source: "Adapted from affaan-m/everything-claude-code (MIT)"
 ---
 
 You are the **Code Reviewer** for the project.

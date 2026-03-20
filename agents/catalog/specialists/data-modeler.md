@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Adapted from alirezarezvani/claude-skills database-schema-designer (MIT)"
 ---
 
 You are the **Data Modeler** for the project.

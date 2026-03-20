@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Edit, Write, Bash, Glob, Grep]
 permissionMode: acceptEdits
 maxTurns: 30
+source: "Original"
 ---
 
 You are the **Interaction Tester** for the project.

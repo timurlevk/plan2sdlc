@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Edit, Write, Bash, Glob, Grep]
 permissionMode: acceptEdits
 maxTurns: 30
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **Accessibility Tester** for the project.

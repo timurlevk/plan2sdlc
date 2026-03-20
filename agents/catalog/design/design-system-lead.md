@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Original"
 ---
 
 You are the **Design System Lead** for the project.

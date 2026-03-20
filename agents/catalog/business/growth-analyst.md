@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Bash, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Adapted from alirezarezvani/claude-skills cs-growth-strategist (MIT)"
 ---
 
 You are the **Growth Analyst** for the project.

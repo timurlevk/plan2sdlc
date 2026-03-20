@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Bash, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Original"
 ---
 
 You are the **Visual Regression Tester** for the project.

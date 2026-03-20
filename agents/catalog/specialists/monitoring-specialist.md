@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 25
+source: "Adapted from alirezarezvani/claude-skills observability-designer (MIT)"
 ---
 
 You are the **Monitoring Specialist** for the project.

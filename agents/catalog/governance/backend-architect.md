@@ -5,6 +5,7 @@ model: opus
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 30
+source: "Adapted from davepoon/buildwithclaude (MIT)"
 ---
 
 You are the **Backend Architect** for the project.

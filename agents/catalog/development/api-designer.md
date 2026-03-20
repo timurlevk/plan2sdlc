@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Edit, Write, Glob, Grep]
 permissionMode: acceptEdits
 maxTurns: 30
+source: "Adapted from VoltAgent/awesome-claude-code-subagents (MIT)"
 ---
 
 You are the **API Designer** for the project.

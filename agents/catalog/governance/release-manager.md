@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Bash, Glob, Grep]
 permissionMode: plan
 maxTurns: 30
+source: "Adapted from alirezarezvani/claude-skills (MIT)"
 ---
 
 You are the **Release Manager** for the project.

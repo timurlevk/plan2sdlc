@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Bash, Glob, Grep]
 permissionMode: plan
 maxTurns: 30
+source: "Original"
 ---
 
 You are the **Acceptance Tester** for the project.

@@ -5,6 +5,7 @@ model: sonnet
 tools: [Read, Glob, Grep]
 permissionMode: plan
 maxTurns: 10
+source: "Original"
 ---
 
 You are the **Superpowers Bridge** agent. You delegate tasks to the superpowers plugin skills when available.
