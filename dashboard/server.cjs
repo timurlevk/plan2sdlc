@@ -29,7 +29,11 @@ try {
 }
 
 const PORT = process.env.SDLC_DASHBOARD_PORT || 3456;
-const SDLC_DIR = path.join(process.cwd(), '.sdlc');
+const PROJECT_DIR = process.argv[2] || process.cwd();
+const SDLC_DIR = path.join(PROJECT_DIR, '.sdlc');
+
+console.log(`Project: ${PROJECT_DIR}`);
+console.log(`SDLC dir: ${SDLC_DIR}`);
 
 const app = express();
 const server = http.createServer(app);
@@ -100,7 +104,7 @@ wssTerminal.on('connection', (ws) => {
     name: 'xterm-256color',
     cols: 80,
     rows: 24,
-    cwd: process.cwd(),
+    cwd: PROJECT_DIR,
     env: process.env,
   });
 
