@@ -5,6 +5,34 @@ All notable changes to the claude-sdlc plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-03-21
+
+### Added
+- Platform-enforced domain isolation via disallowedTools in agent frontmatter
+- Subagent dispatch template with status protocol and TDD instructions
+- Two-stage code review: spec compliance + 3-agent parallel quality review
+- Confidence scoring (0-100, threshold >= 80) on all review agents
+- 4-phase systematic debugging protocol in POST_MORTEM
+- Wave-based task decomposition in PLAN with plan review subagent
+- Quality rubric scoring (6 criteria, A-F grades) in RETRO
+- Prompt-driven iterative execution (adapted from ralph-loop pattern)
+- SessionStart state injection for orchestrator context
+- Mermaid diagram support in BRAINSTORM for terminal visualization
+
+### Changed
+- Orchestrator is now dispatch-only (no superpowers integration table)
+- All session skills rewritten as single-flow (no superpowers/fallback branching)
+- REVIEW uses 3 agents (not 5): governance+coverage, bugs+security, domain boundary
+- Superpowers guard simplified to block-all when SDLC active
+- Config schema version bumped to 2 with execution settings
+
+### Removed
+- Superpowers integration table from orchestrator
+- Per-skill superpowers toggles from config
+- "With superpowers (preferred)" / "Without superpowers (fallback)" branching in all session skills
+- Cost tracking in hooks (hooks can't access cost data)
+- Express brainstorm server (deferred to v2.1)
+
 ## [0.5.0] - 2026-03-21
 
 ### Changed
