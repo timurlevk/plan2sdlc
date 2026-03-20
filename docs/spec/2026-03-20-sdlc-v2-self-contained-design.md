@@ -117,7 +117,7 @@ The protocol is adapted for domain-scoped execution. Changes:
 
 2. **Registry-driven agent selection.** Instead of a generic "implementer," the orchestrator selects agents from `.sdlc/registry.yaml` based on domain, tier, and task type.
 
-3. **Domain guard enforcement.** Subagents operate under the `sdlc-domain-guard.cjs` hook, which blocks writes outside their domain path. This is hardware-level enforcement, not prompt-level trust.
+3. **Domain guard enforcement.** Subagents operate under the `disallowedTools in agent frontmatter` hook, which blocks writes outside their domain path. This is hardware-level enforcement, not prompt-level trust.
 
 4. **Status codes extended.** Added `DOMAIN_VIOLATION` status for when an agent detects it needs to modify files outside its domain (escalates to orchestrator for cross-domain coordination).
 
@@ -267,7 +267,7 @@ The key insight: running tests at each step (not just at the end) catches false 
 
 - TDD protocol: `skills/sessions/execute.md` (TDD section)
 - Domain test command: `.sdlc/registry.yaml` → `agents[].domain.testCommand`
-- Test path enforcement: `hooks/sdlc-domain-guard.cjs`
+- Test path enforcement: `hooks/disallowedTools in agent frontmatter`
 
 #### TDD Protocol for Domain Agents
 
@@ -546,104 +546,68 @@ The claude-md-management plugin scores CLAUDE.md file quality using a 6-criterio
 
 This is the key differentiator from superpowers and the single most important new capability in v2. Superpowers trusts agents via prompts. SDLC v2 enforces domain boundaries via hooks.
 
-### 3.1 Domain Guard Hook (NEW — PreToolUse)
+### 3.1 Domain Isolation via disallowedTools (Platform-Enforced)
 
-**File:** `hooks/sdlc-domain-guard.cjs`
-**Hook type:** PreToolUse
-**Triggers on:** `Edit`, `Write`, `Bash`
+**Mechanism:** Claude Code `disallowedTools` frontmatter with path patterns.
+
+**Why not a hook?** `disallowedTools path patterns` env var does not exist in Claude Code. Hooks cannot determine which agent triggered a tool call. `disallowedTools` is enforced at platform level — reliable, no bypass possible.
 
 #### Mechanism
 
 ```
-Agent dispatched by orchestrator
-  → CLAUDE_AGENT_NAME env var set (e.g., "auth-developer")
-  → Agent attempts Edit on file "packages/billing/src/service.ts"
-  → PreToolUse hook fires
-  → Hook reads CLAUDE_AGENT_NAME → "auth-developer"
-  → Hook looks up agent in .sdlc/registry.yaml → domain: "auth", path: "packages/auth/"
-  → Hook checks: is "packages/billing/src/service.ts" under "packages/auth/"?
-  → NO → Block with reason: "Domain guard: auth-developer cannot edit files in packages/billing/"
+/sdlc init detects 3 domains: auth (packages/auth/), billing (packages/billing/), web (apps/web/)
+
+Generates .claude/agents/auth-developer.md with frontmatter:
+  disallowedTools: "Edit(packages/billing/**), Write(packages/billing/**),
+                    Edit(apps/web/**), Write(apps/web/**),
+                    Edit(.claude/**), Write(.claude/**),
+                    Edit(.sdlc/**), Write(.sdlc/**)"
+
+Auth-developer attempts Edit on "packages/billing/src/service.ts"
+  → Claude Code platform blocks it (disallowedTools match)
+  → No hook needed — enforcement at tool resolution level
 ```
 
-#### Implementation Spec
+#### Implementation: Init generates disallowedTools per agent
 
-```javascript
-// hooks/sdlc-domain-guard.cjs
-// PreToolUse hook
+`/sdlc init` → `generateDomainAgents()` in `src/services/init.ts`:
 
-const GUARDED_TOOLS = ['Edit', 'Write'];
-const BASH_TOOL = 'Bash';
+```typescript
+// For each domain, generate disallowedTools blocking ALL other domains
+const otherDomainPaths = domains
+  .filter(d => d.name !== domain.name)
+  .map(d => `Edit(${d.path}/**), Write(${d.path}/**)`)
+  .join(', ');
 
-// Agents exempt from domain guarding (can write anywhere)
-const EXEMPT_AGENTS = [
-  'orchestrator',
-  'governance-architect',
-  'governance-reviewer',
-  'tech-lead',
-  'release-manager',
-];
+// Also block .claude/ and .sdlc/
+const disallowedPaths = `${otherDomainPaths}, Edit(.claude/**), Write(.claude/**), Edit(.sdlc/**), Write(.sdlc/**)`;
+```
 
-function main() {
-  // 1. Read stdin (hook input JSON)
-  // 2. Parse tool_name and tool_input
-  // 3. If tool not in GUARDED_TOOLS and not BASH_TOOL: allow (exit 0)
-  // 4. Read CLAUDE_AGENT_NAME from env
-  // 5. If no agent name: allow (running as skill or direct session)
-  // 6. If agent is in EXEMPT_AGENTS: allow
-  // 7. Load .sdlc/registry.yaml
-  // 8. Find agent entry → get domain path
-  // 9. If no domain path found (agent not domain-scoped): allow
-  //
-  // For Edit/Write:
-  // 10. Get file_path from tool_input
-  // 11. Normalize paths (forward slashes)
-  // 12. Check: does file_path start with domain_path?
-  // 13. If yes: allow (exit 0)
-  // 14. If no: block (exit 2) with reason
-  //
-  // For Bash:
-  // 10. Get command from tool_input
-  // 11. Check for write-like operations outside domain:
-  //     - "cd" to outside domain path
-  //     - "mv", "cp", "rm" targeting outside domain path
-  //     - redirect (">", ">>") to outside domain path
-  // 12. If detected: block with reason
-  // 13. Otherwise: allow (read-only bash is fine anywhere)
-}
+Result in `.claude/agents/auth-developer.md`:
+```yaml
+---
+name: auth-developer
+disallowedTools: "Edit(packages/billing/**), Write(packages/billing/**), Edit(apps/web/**), Write(apps/web/**), Edit(.claude/**), Write(.claude/**), Edit(.sdlc/**), Write(.sdlc/**)"
+tools: Read, Edit, Write, Bash, Glob, Grep
+---
 ```
 
 #### Edge Cases
 
 | Case | Behavior |
 |------|----------|
-| Agent not in registry | Allow (unmanaged agent, no domain to enforce) |
-| Agent has multiple domains | Allow writes to any of its domains |
-| File path is relative | Resolve against cwd before checking |
-| Shared files (e.g., root package.json) | Configurable: `.sdlc/config.yaml` → `domains.sharedPaths[]` — any domain agent can write |
-| Test fixtures outside domain | Block — test fixtures must live within domain |
-| Generated files (e.g., prisma client) | Configurable: `.sdlc/config.yaml` → `domains.generatedPaths[]` — any domain agent can write |
+| Shared files (root package.json) | Not in any domain path → not blocked by disallowedTools |
+| Agent needs to read other domains | Read is NOT in disallowedTools — read anywhere is allowed |
+| New domain added later | `/sdlc add-domain` regenerates all agent files with updated disallowedTools |
+| Governance agents (architect, etc.) | No disallowedTools — can write anywhere |
+| Bash commands | Best-effort: `Bash(cd /other-domain)` patterns can be added but shell is hard to fully restrict |
 
-#### Registry Format for Domain Guard
+#### Key Advantage over Hook-Based Approach
 
-The domain guard reads agent domain info from `.sdlc/registry.yaml`:
-
-```yaml
-agents:
-  - name: auth-developer
-    domain:
-      name: auth
-      path: packages/auth/
-      testCommand: pnpm --filter @app/auth test
-      buildCommand: pnpm --filter @app/auth build
-      lintCommand: pnpm --filter @app/auth lint
-    tier: auto
-
-  - name: billing-developer
-    domain:
-      name: billing
-      path: packages/billing/
-      testCommand: pnpm --filter @app/billing test
-    tier: auto
+- **Platform-enforced:** Claude Code blocks the tool BEFORE execution — no race condition, no bypass
+- **No env var dependency:** No `disallowedTools path patterns` needed — restrictions baked into agent .md file
+- **Visible:** Developer can read the agent file and see exactly what's blocked
+- **Testable:** `claude plugin validate .` checks disallowedTools syntax
 
   - name: governance-architect
     # No domain field — exempt from domain guarding
@@ -1287,16 +1251,16 @@ Post-mortem action items (preventive measures) do NOT trigger another post-morte
 
 ## 6. New Hooks
 
-### 6.1 sdlc-domain-guard.cjs (PreToolUse)
+### 6.1 disallowedTools in agent frontmatter (PreToolUse)
 
-**File:** `hooks/sdlc-domain-guard.cjs`
+**File:** `hooks/disallowedTools in agent frontmatter`
 **Type:** PreToolUse
 **Triggers on:** Edit, Write, Bash
 
 Full specification in section 3.1. This is a new file — does not replace any existing hook.
 
 **Summary:**
-- Reads `CLAUDE_AGENT_NAME` env var
+- Reads `disallowedTools path patterns` env var
 - Looks up agent's domain in `.sdlc/registry.yaml`
 - Blocks Edit/Write calls targeting files outside the agent's domain path
 - Allows Read anywhere (agents need cross-domain context for facades)
@@ -1455,7 +1419,7 @@ Session skills are replaced entirely (markdown files). No data migration needed 
 ### 8.3 Hooks
 
 New hooks are added alongside existing ones:
-- `sdlc-domain-guard.cjs` — NEW file
+- `disallowedTools in agent frontmatter` — NEW file
 - `sdlc-iteration-hook.cjs` — NEW file
 - `entry-check.cjs` — MODIFIED (enhanced with state injection)
 - `sdlc-superpowers-guard.cjs` — MODIFIED (simplified to block-all)
@@ -1527,7 +1491,7 @@ The agent `agents/catalog/bridges/superpowers-bridge.md` is deprecated. It can r
 **Estimated effort:** M
 
 **Deliverables:**
-1. `hooks/sdlc-domain-guard.cjs` — new PreToolUse hook (section 3.1)
+1. `hooks/disallowedTools in agent frontmatter` — new PreToolUse hook (section 3.1)
 2. `.sdlc/registry.yaml` format update — add `domain.path` to agent entries
 3. `agents/orchestrator.md` — rewrite: remove superpowers table, add dispatch protocol, enforce no Edit/Write
 4. `agents/templates/subagent-dispatch.md` — new subagent prompt template (section 2.1)
@@ -1659,7 +1623,7 @@ The agent `agents/catalog/bridges/superpowers-bridge.md` is deprecated. It can r
 
 | File | Type | Phase |
 |------|------|-------|
-| `hooks/sdlc-domain-guard.cjs` | Hook (PreToolUse) | 1 |
+| `hooks/disallowedTools in agent frontmatter` | Hook (PreToolUse) | 1 |
 | `hooks/sdlc-iteration-hook.cjs` | Hook (Stop) | 2 |
 | `agents/templates/subagent-dispatch.md` | Agent template | 1 |
 | `scripts/brainstorm-server.ts` | Script | 4 |

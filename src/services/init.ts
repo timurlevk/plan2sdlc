@@ -310,6 +310,16 @@ export async function generateDomainAgents(
   const projectName = basename(projectDir);
 
   for (const domain of domains) {
+    // Generate disallowedTools: block Edit/Write for ALL other domain paths
+    const otherDomainPaths = domains
+      .filter(d => d.name !== domain.name)
+      .map(d => `Edit(${d.path}/**), Write(${d.path}/**)`)
+      .join(', ');
+    // Also block .claude/ and .sdlc/ modifications
+    const disallowedPaths = otherDomainPaths
+      ? `${otherDomainPaths}, Edit(.claude/**), Write(.claude/**), Edit(.sdlc/**), Write(.sdlc/**)`
+      : 'Edit(.claude/**), Write(.claude/**), Edit(.sdlc/**), Write(.sdlc/**)';
+
     const variables: Record<string, string> = {
       domain: domain.name,
       path: domain.path,
@@ -321,6 +331,7 @@ export async function generateDomainAgents(
       coverage_command: `pnpm test:coverage`,
       e2e_framework: 'playwright',
       domain_description: domain.description,
+      disallowed_paths: disallowedPaths,
     };
 
     // Developer agent
