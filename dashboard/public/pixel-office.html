@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Agents</title>
+    <link rel="stylesheet" crossorigin href="./pixel-assets/index-8M7aiFDb.css">
+    <script>
+      // Mock VS Code API — pixel-agents requires this
+      window.acquireVsCodeApi = function() {
+        const state = {};
+        const api = {
+          postMessage: function(msg) {
+            // Forward outbound messages to parent (main dashboard)
+            window.parent.postMessage({ source: 'pixel-agents', payload: msg }, '*');
+          },
+          getState: function() { return state; },
+          setState: function(newState) { Object.assign(state, newState); },
+        };
+        return api;
+      };
+
+      // Listen for messages from parent dashboard (terminal activity)
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.source === 'sdlc-dashboard') {
+          // Parent sends agent activity — dispatch as VS Code message event
+          // pixel-agents listens to 'message' events on window
+          const msg = event.data.payload;
+          window.dispatchEvent(new MessageEvent('message', { data: msg }));
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" crossorigin src="./pixel-assets/index-D5Mbhoaa.js"></script>
+  </body>
+</html>

@@ -123,22 +123,11 @@
 
   <!-- Main Content -->
   <div class="main">
-    <!-- Office Panel -->
+    <!-- Office Panel — Pixel Agents iframe -->
     <div class="office-panel">
-      <div class="office-canvas-container">
-        <canvas id="office-canvas"></canvas>
-        <div class="office-placeholder" id="office-placeholder">
-          <h2>Pixel Office</h2>
-          <p>Agent visualization</p>
-          <p style="margin-top:12px; font-size:12px;">Agents will appear here when workflows are active</p>
-          <div id="agent-grid" style="margin-top:20px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
-        </div>
-        <div class="agent-popup" id="agent-popup">
-          <div class="agent-name" id="popup-name"></div>
-          <div class="agent-role" id="popup-role"></div>
-          <div class="agent-status" id="popup-status"></div>
-        </div>
-      </div>
+      <iframe id="pixel-office" src="/pixel-office.html"
+        style="width:100%; height:100%; border:none; background:#1a1a2e;">
+      </iframe>
     </div>
 
     <!-- Terminal Panel -->
@@ -204,6 +193,8 @@
         const msg = JSON.parse(event.data);
         if (msg.type === 'output') {
           term.write(msg.data);
+          // Forward terminal output to pixel office iframe for activity detection
+          forwardToPixelOffice(msg.data);
         } else if (msg.type === 'exit') {
           term.write('\r\n\x1b[33m[Session ended. Refresh to restart.]\x1b[0m\r\n');
           document.getElementById('terminal-dot').className = 'dot red';
@@ -234,6 +225,39 @@
     });
 
     connectTerminal();
+
+    // ===== Terminal → Pixel Office Bridge =====
+    // Parse Claude output for agent activity keywords and forward to pixel office
+    let termBuffer = '';
+    function forwardToPixelOffice(data) {
+      termBuffer += data;
+      // Check for session/agent activity patterns in output
+      const iframe = document.getElementById('pixel-office');
+      if (!iframe || !iframe.contentWindow) return;
+
+      const patterns = [
+        { re: /EXECUTE/i, event: 'toolStart', tool: 'EXECUTE' },
+        { re: /REVIEW/i, event: 'toolStart', tool: 'REVIEW' },
+        { re: /BRAINSTORM/i, event: 'toolStart', tool: 'BRAINSTORM' },
+        { re: /PLAN/i, event: 'toolStart', tool: 'PLAN' },
+        { re: /MERGE/i, event: 'toolStart', tool: 'MERGE' },
+        { re: /QUICK_FIX/i, event: 'toolStart', tool: 'QUICK_FIX' },
+        { re: /completed|done|approved/i, event: 'toolComplete', tool: 'session' },
+        { re: /developer|tester|architect|reviewer/i, event: 'agentSelected', tool: 'agent' },
+      ];
+
+      for (const p of patterns) {
+        if (p.re.test(termBuffer)) {
+          iframe.contentWindow.postMessage({
+            source: 'sdlc-dashboard',
+            payload: { type: p.event, toolName: p.tool, agentId: 'orchestrator' }
+          }, '*');
+        }
+      }
+
+      // Keep buffer manageable
+      if (termBuffer.length > 2000) termBuffer = termBuffer.slice(-1000);
+    }
 
     // ===== State Updates =====
     let stateWs;
