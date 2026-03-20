@@ -1,0 +1,10 @@
+{
+  "name": "claude-sdlc",
+  "version": "0.1.0",
+  "description": "Full SDLC governance for Claude Code — orchestrator, agent teams, workflow engine",
+  "author": "plan2skill",
+  "license": "MIT",
+  "homepage": "https://github.com/plan2skill/claude-sdlc",
+  "claude-code-min-version": "1.0.0",
+  "experimental": true
+}

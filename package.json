@@ -1,0 +1,21 @@
+{
+  "name": "claude-sdlc",
+  "version": "0.1.0",
+  "description": "Full SDLC governance plugin for Claude Code — orchestrator, agent teams, workflow engine",
+  "author": "plan2skill",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:registry": "tsx scripts/registry-builder.ts",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "vitest": "^3.0.0",
+    "eslint": "^9.0.0"
+  }
+}
