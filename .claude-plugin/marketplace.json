@@ -13,7 +13,7 @@
         "repo": "plan2skill/plan2sdlc"
       },
       "description": "Full SDLC governance for Claude Code — orchestrator, agent teams, workflow engine",
-      "version": "0.1.5"
+      "version": "0.1.6"
     }
   ]
 }
