@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-sdlc.dev/schema/session-log.schema.json",
+  "title": "SDLC Session Log",
+  "description": "Log entry for a completed session in the claude-sdlc plugin",
+  "type": "object",
+  "required": [
+    "id",
+    "workflowId",
+    "backlogItemId",
+    "sessionType",
+    "startTime",
+    "endTime",
+    "agents",
+    "totalCost",
+    "result",
+    "turnsUsed"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique session log identifier"
+    },
+    "workflowId": {
+      "type": "string"
+    },
+    "backlogItemId": {
+      "type": "string"
+    },
+    "sessionType": {
+      "type": "string"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "agents": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/AgentLog" }
+    },
+    "totalCost": {
+      "type": "number",
+      "minimum": 0
+    },
+    "result": {
+      "type": "string",
+      "enum": ["approved", "rejected", "needs-changes", "completed", "escalated"]
+    },
+    "turnsUsed": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "definitions": {
+    "AgentLog": {
+      "type": "object",
+      "required": [
+        "name",
+        "model",
+        "inputTokens",
+        "outputTokens",
+        "cost",
+        "turnsUsed",
+        "toolCalls",
+        "result"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "inputTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outputTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "turnsUsed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "toolCalls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "result": {
+          "type": "string",
+          "enum": ["success", "failure", "escalated"]
+        }
+      }
+    }
+  }
+}

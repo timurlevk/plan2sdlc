@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-sdlc.dev/schema/state.schema.json",
+  "title": "SDLC Workflow State",
+  "description": "Workflow state tracking for the claude-sdlc plugin",
+  "type": "object",
+  "required": ["activeWorkflows", "cadence", "sessionQueue", "domainLocks"],
+  "additionalProperties": false,
+  "properties": {
+    "activeWorkflows": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/ActiveWorkflow" }
+    },
+    "cadence": {
+      "$ref": "#/definitions/Cadence"
+    },
+    "sessionQueue": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/QueuedSession" }
+    },
+    "domainLocks": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          { "$ref": "#/definitions/DomainLock" },
+          { "type": "null" }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ActiveWorkflow": {
+      "type": "object",
+      "required": [
+        "id",
+        "backlogItemId",
+        "currentSession",
+        "context",
+        "history",
+        "startedAt",
+        "totalCost"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^WF-\\d{3,}$"
+        },
+        "backlogItemId": {
+          "type": "string"
+        },
+        "currentSession": {
+          "type": "string"
+        },
+        "context": {
+          "$ref": "#/definitions/WorkflowContext"
+        },
+        "history": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SessionRef" }
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "totalCost": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "WorkflowContext": {
+      "type": "object",
+      "required": ["reviewAttempt", "maxRetries"],
+      "additionalProperties": false,
+      "properties": {
+        "specPath": {
+          "type": "string"
+        },
+        "planPath": {
+          "type": "string"
+        },
+        "worktrees": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "reviewAttempt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxRetries": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "SessionRef": {
+      "type": "object",
+      "required": ["sessionType", "timestamp", "result", "cost", "agentsUsed"],
+      "additionalProperties": false,
+      "properties": {
+        "sessionType": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "result": {
+          "type": "string",
+          "enum": ["approved", "rejected", "needs-changes", "completed", "escalated"]
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "agentsUsed": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "QueuedSession": {
+      "type": "object",
+      "required": ["sessionType", "backlogItemId", "priority"],
+      "additionalProperties": false,
+      "properties": {
+        "sessionType": {
+          "type": "string"
+        },
+        "backlogItemId": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low", "unprioritized"]
+        }
+      }
+    },
+    "Cadence": {
+      "type": "object",
+      "required": ["mergesSinceRetro"],
+      "additionalProperties": false,
+      "properties": {
+        "lastRetro": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastGapAnalysis": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastArchReview": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "mergesSinceRetro": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "DomainLock": {
+      "type": "object",
+      "required": ["workflowId", "lockedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "workflowId": {
+          "type": "string"
+        },
+        "lockedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

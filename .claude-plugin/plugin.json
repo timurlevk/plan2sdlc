@@ -6,5 +6,32 @@
   "license": "MIT",
   "homepage": "https://github.com/plan2skill/claude-sdlc",
   "claude-code-min-version": "1.0.0",
-  "experimental": true
+  "experimental": true,
+  "keywords": ["sdlc", "governance", "workflow", "agents", "orchestrator"],
+  "skills": [
+    "sdlc-init",
+    "sdlc-dispatch",
+    "sdlc-status",
+    "sdlc-triage",
+    "sdlc-retro",
+    "sdlc-release",
+    "sdlc-cost",
+    "sdlc-team",
+    "sdlc-hotfix",
+    "sdlc-add-agent",
+    "sdlc-add-domain",
+    "sdlc-add-sme",
+    "sdlc-undo",
+    "sdlc-uninstall",
+    "sdlc-enable",
+    "sdlc-help"
+  ],
+  "agents": ["orchestrator"],
+  "hooks": {
+    "SessionStart": ["hooks/entry-check.js"],
+    "PreToolUse": [
+      "hooks/sdlc-secrets-guard.js",
+      "hooks/sdlc-write-guard.js"
+    ]
+  }
 }

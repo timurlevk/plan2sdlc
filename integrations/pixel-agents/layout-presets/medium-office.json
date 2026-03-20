@@ -1,0 +1,13 @@
+{
+  "preset": "medium-office",
+  "grid": "32x32",
+  "fits": "9-25 agents",
+  "zones": {
+    "boss-desk": { "agents": ["orchestrator"], "position": "top-center" },
+    "meeting-room": { "agents": ["architect", "product-analyst", "qa-lead", "tech-lead", "code-reviewer"], "position": "center-left" },
+    "dev-pod-1": { "agents": ["api-*"], "position": "bottom-left" },
+    "dev-pod-2": { "agents": ["web-*"], "position": "bottom-center" },
+    "qa-lab": { "agents": ["e2e-tester", "security-auditor", "a11y-tester", "performance-auditor"], "position": "center-right" },
+    "library": { "agents": ["*-sme"], "position": "top-right", "spawn": "on-demand" }
+  }
+}

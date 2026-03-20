@@ -1,0 +1,10 @@
+{
+  "preset": "small-office",
+  "grid": "16x16",
+  "fits": "3-8 agents",
+  "zones": {
+    "boss-desk": { "agents": ["orchestrator"], "position": "top-center" },
+    "dev-pod-1": { "agents": ["*-developer", "*-tester"], "position": "center" },
+    "qa-corner": { "agents": ["e2e-tester", "security-auditor"], "position": "bottom-right" }
+  }
+}

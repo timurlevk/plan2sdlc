@@ -1,0 +1,18 @@
+{
+  "preset": "large-office",
+  "grid": "48x48",
+  "fits": "26-50 agents",
+  "zones": {
+    "boss-desk": { "agents": ["orchestrator"], "position": "top-center" },
+    "meeting-room": { "agents": ["architect", "product-analyst", "qa-lead", "tech-lead", "code-reviewer"], "position": "center-left" },
+    "dev-pod-1": { "agents": ["api-*"], "position": "left-1" },
+    "dev-pod-2": { "agents": ["web-*"], "position": "left-2" },
+    "dev-pod-3": { "agents": ["mobile-*"], "position": "left-3" },
+    "dev-pod-4": { "agents": ["*-developer", "*-tester"], "position": "left-4" },
+    "qa-lab": { "agents": ["e2e-*", "security-*", "a11y-*", "performance-*"], "position": "right-1" },
+    "design-studio": { "agents": ["ux-*", "ui-*", "design-*"], "position": "right-2" },
+    "library": { "agents": ["*-sme"], "position": "top-right", "spawn": "on-demand" },
+    "marketing": { "agents": ["marketing-*", "pr-*", "content-*"], "position": "bottom-right", "spawn": "on-demand" },
+    "devops-corner": { "agents": ["devops", "monitoring-*"], "position": "bottom-right-2" }
+  }
+}
