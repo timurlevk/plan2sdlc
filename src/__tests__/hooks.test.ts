@@ -135,8 +135,40 @@ describe('sdlc-secrets-guard', () => {
     expect(result.exitCode).toBe(2);
   });
 
-  it('allows non-checked tools immediately', async () => {
+  it('blocks Bash: cat .env', async () => {
     const result = await runHook(SECRETS_GUARD, makeInput('Bash', { command: 'cat .env' }));
+    expect(result.exitCode).toBe(2);
+    const output = JSON.parse(result.stdout);
+    expect(output.decision).toBe('block');
+    expect(output.reason).toContain('SDLC secrets guard');
+  });
+
+  it('allows Bash: cat .env.example', async () => {
+    const result = await runHook(SECRETS_GUARD, makeInput('Bash', { command: 'cat .env.example' }));
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('blocks Bash: printenv', async () => {
+    const result = await runHook(SECRETS_GUARD, makeInput('Bash', { command: 'printenv' }));
+    expect(result.exitCode).toBe(2);
+    const output = JSON.parse(result.stdout);
+    expect(output.decision).toBe('block');
+  });
+
+  it('blocks Bash: echo $SECRET_KEY', async () => {
+    const result = await runHook(SECRETS_GUARD, makeInput('Bash', { command: 'echo $SECRET_KEY' }));
+    expect(result.exitCode).toBe(2);
+    const output = JSON.parse(result.stdout);
+    expect(output.decision).toBe('block');
+  });
+
+  it('allows Bash: cat src/config.ts', async () => {
+    const result = await runHook(SECRETS_GUARD, makeInput('Bash', { command: 'cat src/config.ts' }));
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('allows Bash: ls -la', async () => {
+    const result = await runHook(SECRETS_GUARD, makeInput('Bash', { command: 'ls -la' }));
     expect(result.exitCode).toBe(0);
   });
 });
