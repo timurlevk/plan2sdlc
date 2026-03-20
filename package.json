@@ -1,6 +1,6 @@
 {
   "name": "claude-sdlc",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Full SDLC governance plugin for Claude Code — orchestrator, agent teams, workflow engine",
   "author": "plan2skill",
   "license": "MIT",
