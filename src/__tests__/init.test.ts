@@ -197,14 +197,15 @@ describe('generateConfig', () => {
     expect(await fileExistsCheck(join(sdlcDir, 'tech-debt.json'))).toBe(true);
 
     // Verify empty state files
-    const backlog = await readJson<{ items: unknown[] }>(join(sdlcDir, 'backlog.json'));
-    expect(backlog.items).toEqual([]);
+    const backlog = await readJson<unknown[]>(join(sdlcDir, 'backlog.json'));
+    expect(backlog).toEqual([]);
 
-    const state = await readJson<{ workflows: unknown[]; domainLocks: unknown[] }>(
+    const state = await readJson<{ activeWorkflows: unknown[]; cadence: { mergesSinceRetro: number }; sessionQueue: unknown[]; domainLocks: Record<string, unknown> }>(
       join(sdlcDir, 'state.json'),
     );
-    expect(state.workflows).toEqual([]);
-    expect(state.domainLocks).toEqual([]);
+    expect(state.activeWorkflows).toEqual([]);
+    expect(state.cadence.mergesSinceRetro).toBe(0);
+    expect(state.domainLocks).toEqual({});
 
     // Verify generated list is non-empty and all paths are absolute
     expect(generated.length).toBeGreaterThan(0);

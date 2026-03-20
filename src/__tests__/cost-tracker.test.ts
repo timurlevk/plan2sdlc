@@ -143,23 +143,26 @@ describe('generateCostReport', () => {
   it('should aggregate by session type and model', () => {
     const logs: SessionCostSummary[] = [
       {
-        ...startSession('s1', 'wf1', 'frontend-001', 'EXECUTE'),
+        ...startSession('s1', 'wf1', 'TASK-001', 'EXECUTE'),
         totalCost: 0.50,
+        domains: ['frontend'],
         agents: [
           makeCostEntry({ model: 'claude-sonnet', cost: 0.30 }),
           makeCostEntry({ model: 'claude-opus', cost: 0.20 }),
         ],
       },
       {
-        ...startSession('s2', 'wf2', 'backend-002', 'EXECUTE'),
+        ...startSession('s2', 'wf2', 'TASK-002', 'EXECUTE'),
         totalCost: 0.40,
+        domains: ['backend'],
         agents: [
           makeCostEntry({ model: 'claude-sonnet', cost: 0.40 }),
         ],
       },
       {
-        ...startSession('s3', 'wf3', 'frontend-003', 'REVIEW'),
+        ...startSession('s3', 'wf3', 'TASK-003', 'REVIEW'),
         totalCost: 0.10,
+        domains: ['frontend'],
         agents: [
           makeCostEntry({ model: 'claude-opus', cost: 0.10 }),
         ],

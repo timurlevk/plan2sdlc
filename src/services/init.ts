@@ -169,12 +169,17 @@ export async function generateConfig(
 
   // 3. backlog.json (empty)
   const backlogPath = join(sdlcDir, 'backlog.json');
-  await writeJsonFile(backlogPath, { items: [] });
+  await writeJsonFile(backlogPath, []);
   generated.push(backlogPath);
 
   // 4. state.json (empty)
   const statePath = join(sdlcDir, 'state.json');
-  await writeJsonFile(statePath, { workflows: [], domainLocks: [] });
+  await writeJsonFile(statePath, {
+    activeWorkflows: [],
+    cadence: { mergesSinceRetro: 0 },
+    sessionQueue: [],
+    domainLocks: {},
+  });
   generated.push(statePath);
 
   // 5. tech-debt.json (empty)

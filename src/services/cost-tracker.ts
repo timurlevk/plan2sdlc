@@ -33,6 +33,8 @@ export interface SessionCostSummary {
   result?: 'success' | 'failure' | 'escalated';
   /** Complexity tier — populated from backlog item when available. */
   complexity?: 'S' | 'M' | 'L' | 'XL';
+  /** Affected domains — populated from classification when available. */
+  domains?: string[];
 }
 
 export interface PeriodCostReport {
@@ -169,13 +171,14 @@ export function generateCostReport(
     };
   }
 
-  // byDomain: keyed by backlogItemId domain prefix (everything before first hyphen, or the full id)
+  // byDomain: use explicit domains array if available, otherwise 'unknown'
   const domainTotals: Record<string, number> = {};
   for (const log of logs) {
-    const domain = log.backlogItemId.includes('-')
-      ? log.backlogItemId.split('-')[0]!
-      : log.backlogItemId;
-    domainTotals[domain] = (domainTotals[domain] ?? 0) + log.totalCost;
+    const domains = log.domains && log.domains.length > 0 ? log.domains : ['unknown'];
+    const costPerDomain = log.totalCost / domains.length;
+    for (const domain of domains) {
+      domainTotals[domain] = (domainTotals[domain] ?? 0) + costPerDomain;
+    }
   }
   const byDomain: PeriodCostReport['byDomain'] = {};
   for (const [domain, cost] of Object.entries(domainTotals)) {
@@ -217,7 +220,7 @@ export async function checkMonthlyBudget(
 
   return {
     warning: total >= warningThreshold,
-    exceeded: total >= hardCap,
+    exceeded: hardCap > 0 && total >= hardCap,
     total,
   };
 }
