@@ -8,3 +8,6 @@ Thumbs.db
 
 # Plugin state (user-specific, not committed to plugin repo)
 # Note: .sdlc/ is created in USER's project, not here
+.sdlc/state.json
+.sdlc/history/
+.sdlc/costs/
