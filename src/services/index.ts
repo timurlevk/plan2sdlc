@@ -47,3 +47,14 @@ export {
   checkBudget,
   checkMonthlyBudget,
 } from './cost-tracker.js';
+
+export {
+  loadTechDebt,
+  saveTechDebt,
+  addTechDebtItem,
+  updateTechDebtItem,
+  resolveTechDebtItem,
+  calculateMetrics,
+  getItemsBySeverity,
+  linkToTask,
+} from './tech-debt.js';
