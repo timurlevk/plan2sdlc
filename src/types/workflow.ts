@@ -20,6 +20,12 @@ export interface ActiveWorkflow {
   history: SessionRef[];
   startedAt: string;
   totalCost: number;
+  // Classification context (preserved for resume)
+  taskType?: string;
+  complexity?: string;
+  domains?: string[];
+  priority?: string;
+  sessionChain?: string[];
 }
 
 export interface WorkflowContext {

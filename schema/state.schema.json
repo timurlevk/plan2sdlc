@@ -4,9 +4,14 @@
   "title": "SDLC Workflow State",
   "description": "Workflow state tracking for the claude-sdlc plugin",
   "type": "object",
-  "required": ["activeWorkflows", "cadence", "sessionQueue", "domainLocks"],
+  "required": ["schemaVersion", "activeWorkflows", "cadence", "sessionQueue", "domainLocks"],
   "additionalProperties": false,
   "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version for migration support"
+    },
     "activeWorkflows": {
       "type": "array",
       "items": { "$ref": "#/definitions/ActiveWorkflow" }
@@ -66,6 +71,28 @@
         "totalCost": {
           "type": "number",
           "minimum": 0
+        },
+        "taskType": {
+          "type": "string",
+          "description": "Classification task type (preserved for resume)"
+        },
+        "complexity": {
+          "type": "string",
+          "description": "Classification complexity (preserved for resume)"
+        },
+        "domains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Classification domains (preserved for resume)"
+        },
+        "priority": {
+          "type": "string",
+          "description": "Classification priority (preserved for resume)"
+        },
+        "sessionChain": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Classification session chain (preserved for resume)"
         }
       }
     },

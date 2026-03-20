@@ -44,6 +44,24 @@ Team: {agents}
 Dispatching {first_session}...
 ```
 
+## Cost Estimate (for M/L/XL tasks)
+
+Before dispatching M, L, or XL tasks, show a cost estimate:
+
+```
+⚠ Cost Estimate
+───────────────────────────────────────────────────────
+Session chain: {chain}
+Estimated sessions: {count}
+Per-session budget: ${budget per session from config}
+Estimated total: ${sum of per-session budgets for chain}
+Monthly spent so far: ${current monthly total}
+
+Continue? [y/n/adjust]
+```
+
+For S/QUICK_FIX tasks, skip the estimate (auto-dispatch).
+
 ## Error Handling
 
 - If `.sdlc/` not initialized: "⚠ Run /sdlc init first."

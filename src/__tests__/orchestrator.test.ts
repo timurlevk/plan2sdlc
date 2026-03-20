@@ -108,7 +108,7 @@ describe('resumeWorkflow', () => {
   it('should find an active workflow', async () => {
     await createWorkflow(sdlcDir, 'TASK-001', 'EXECUTE');
 
-    const result = await resumeWorkflow(sdlcDir);
+    const result = await resumeWorkflow(sdlcDir, []);
     expect(result).not.toBeNull();
     expect(result!.workflow.id).toBe('WF-001');
     expect(result!.nextSession).toBe('EXECUTE');
@@ -118,21 +118,40 @@ describe('resumeWorkflow', () => {
     await createWorkflow(sdlcDir, 'TASK-001', 'PLAN');
     await createWorkflow(sdlcDir, 'TASK-002', 'EXECUTE');
 
-    const result = await resumeWorkflow(sdlcDir, 'WF-002');
+    const result = await resumeWorkflow(sdlcDir, [], 'WF-002');
     expect(result).not.toBeNull();
     expect(result!.workflow.id).toBe('WF-002');
     expect(result!.nextSession).toBe('EXECUTE');
   });
 
   it('should return null when no active workflows', async () => {
-    const result = await resumeWorkflow(sdlcDir);
+    const result = await resumeWorkflow(sdlcDir, []);
     expect(result).toBeNull();
   });
 
   it('should return null when specified workflow not found', async () => {
     await createWorkflow(sdlcDir, 'TASK-001', 'PLAN');
-    const result = await resumeWorkflow(sdlcDir, 'WF-999');
+    const result = await resumeWorkflow(sdlcDir, [], 'WF-999');
     expect(result).toBeNull();
+  });
+
+  it('should preserve classification data on resume after dispatch', async () => {
+    const dispatchResult = await dispatchTask(
+      sdlcDir,
+      'Add user authentication to the api',
+      BASE_DOMAINS,
+      baseRegistry(),
+    );
+
+    const result = await resumeWorkflow(sdlcDir, baseRegistry());
+    expect(result).not.toBeNull();
+    expect(result!.workflow.taskType).toBe(dispatchResult.classification.taskType);
+    expect(result!.workflow.complexity).toBe(dispatchResult.classification.complexity);
+    expect(result!.workflow.domains).toEqual(dispatchResult.classification.domains);
+    expect(result!.workflow.priority).toBe(dispatchResult.classification.priority);
+    expect(result!.workflow.sessionChain).toEqual(dispatchResult.classification.sessionChain);
+    // Team should be non-empty when registry is provided
+    expect(result!.teamComposition.total).toBeGreaterThan(0);
   });
 });
 

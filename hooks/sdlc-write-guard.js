@@ -3,7 +3,8 @@
 
 /**
  * SDLC Write Guard — PreToolUse hook
- * Blocks non-governance agents from modifying .claude/ config files.
+ * Blocks non-governance agents from modifying .claude/ config files
+ * and non-orchestrator/governance agents from modifying .sdlc/ state files.
  */
 
 const WRITE_TOOLS = ['Edit', 'Write'];
@@ -17,12 +18,25 @@ const GOVERNANCE_AGENTS = [
   'qa-lead',
 ];
 
+// Agents allowed to write to .sdlc/ state files
+const SDLC_STATE_AGENTS = [
+  'orchestrator',
+  'governance-architect',
+  'governance-reviewer',
+  'tech-lead',
+];
+
 // qa-lead can only modify these files inside .claude/
 const QA_LEAD_ALLOWED = ['testing.md', 'e2e.md'];
 
 function isClaudePath(filePath) {
   const normalized = filePath.replace(/\\/g, '/');
   return normalized.startsWith('.claude/') || normalized.includes('/.claude/');
+}
+
+function isSdlcPath(filePath) {
+  const normalized = filePath.replace(/\\/g, '/');
+  return normalized.includes('/.sdlc/') || normalized.startsWith('.sdlc/');
 }
 
 function main() {
@@ -47,12 +61,28 @@ function main() {
     const toolInput = data.tool_input || {};
     const filePath = toolInput.file_path || '';
 
-    if (!isClaudePath(filePath)) {
+    const agentName = process.env.CLAUDE_AGENT_NAME || '';
+
+    // Check .sdlc/ state file protection
+    if (isSdlcPath(filePath)) {
+      if (!agentName || !SDLC_STATE_AGENTS.includes(agentName)) {
+        const result = JSON.stringify({
+          decision: 'block',
+          reason: 'SDLC write guard: only orchestrator and governance agents can modify .sdlc/ state files',
+        });
+        process.stdout.write(result);
+        process.exit(2);
+        return;
+      }
+      // Allowed SDLC state agent — let through
       process.exit(0);
       return;
     }
 
-    const agentName = process.env.CLAUDE_AGENT_NAME || '';
+    if (!isClaudePath(filePath)) {
+      process.exit(0);
+      return;
+    }
 
     if (!GOVERNANCE_AGENTS.includes(agentName)) {
       const result = JSON.stringify({

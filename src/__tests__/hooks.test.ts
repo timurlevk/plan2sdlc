@@ -259,6 +259,36 @@ describe('sdlc-write-guard', () => {
     const output = JSON.parse(result.stdout);
     expect(output.reason).toContain('qa-lead');
   });
+
+  it('blocks non-governance agent from writing .sdlc/ state files', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      makeInput('Edit', { file_path: '.sdlc/backlog.json' }),
+      { CLAUDE_AGENT_NAME: 'api-developer' },
+    );
+    expect(result.exitCode).toBe(2);
+    const output = JSON.parse(result.stdout);
+    expect(output.decision).toBe('block');
+    expect(output.reason).toContain('.sdlc/');
+  });
+
+  it('allows orchestrator to write .sdlc/ state files', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      makeInput('Write', { file_path: '.sdlc/backlog.json' }),
+      { CLAUDE_AGENT_NAME: 'orchestrator' },
+    );
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('allows governance-architect to write .sdlc/ state files', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      makeInput('Edit', { file_path: '.sdlc/state.json' }),
+      { CLAUDE_AGENT_NAME: 'governance-architect' },
+    );
+    expect(result.exitCode).toBe(0);
+  });
 });
 
 describe('entry-check', () => {

@@ -14,7 +14,7 @@ import type { ConflictCheckResult } from './concurrency.js';
 import type { BacklogItem } from '../types/backlog.js';
 import { classifyTask } from './classifier.js';
 import { addBacklogItem } from './backlog.js';
-import { createWorkflow, loadState } from './workflow.js';
+import { createWorkflow, updateWorkflow, loadState } from './workflow.js';
 import { readHandoff } from './handoff.js';
 import { checkConflicts } from './concurrency.js';
 import { checkMonthlyBudget } from './cost-tracker.js';
@@ -256,7 +256,15 @@ export async function dispatchTask(
   const teamComposition = composeTeam(classification, registryAgents, nextSession);
 
   // 5. Create workflow
-  const workflow = await createWorkflow(sdlcDir, backlogItem.id, nextSession);
+  const initialWorkflow = await createWorkflow(sdlcDir, backlogItem.id, nextSession);
+  // Store classification for resume
+  const workflow = await updateWorkflow(sdlcDir, initialWorkflow.id, {
+    taskType: classification.taskType,
+    complexity: classification.complexity,
+    domains: classification.domains,
+    priority: classification.priority,
+    sessionChain: classification.sessionChain,
+  } as Partial<ActiveWorkflow>);
 
   // 6. Check conflicts
   const state = await loadState(sdlcDir);
@@ -281,6 +289,7 @@ export async function dispatchTask(
  */
 export async function resumeWorkflow(
   sdlcDir: string,
+  registryAgents?: AgentEntry[],
   workflowId?: string,
 ): Promise<ResumeResult | null> {
   const state = await loadState(sdlcDir);
@@ -306,19 +315,18 @@ export async function resumeWorkflow(
   // The current session on the workflow is the next session to run
   const nextSession = workflow.currentSession as SessionType;
 
-  // Compose team for the current session
-  // We need a classification-like object for team composition
-  // Derive minimal classification from workflow context
+  // Compose team for the current session using stored classification
+  const classification: ClassificationResult = {
+    taskType: (workflow.taskType as any) || 'feature',
+    complexity: (workflow.complexity as any) || 'M',
+    domains: workflow.domains || [],
+    sessionChain: (workflow.sessionChain || [nextSession]) as SessionType[],
+    priority: (workflow.priority as any) || 'medium',
+    suggestedTitle: '',
+  };
   const teamComposition = composeTeam(
-    {
-      taskType: 'feature',
-      complexity: 'M',
-      domains: [],
-      sessionChain: [nextSession],
-      priority: 'medium',
-      suggestedTitle: '',
-    },
-    [], // No registry agents available in resume — caller should enrich
+    classification,
+    registryAgents || [],
     nextSession,
   );
 
