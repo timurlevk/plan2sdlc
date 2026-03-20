@@ -1,0 +1,15 @@
+{
+  "name": "plan2skill-plugins",
+  "owner": {
+    "name": "Plan2Skill",
+    "email": "plugins@plan2skill.com"
+  },
+  "plugins": [
+    {
+      "name": "claude-sdlc",
+      "source": ".",
+      "description": "Full SDLC governance for Claude Code — orchestrator, agent teams, workflow engine",
+      "version": "0.1.0"
+    }
+  ]
+}
