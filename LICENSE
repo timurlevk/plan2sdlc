@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 plan2skill
+Copyright (c) 2026 Plan2Skill (Timur Levkovskyi)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,28 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Commercial License
+
+This software is also available under a Commercial License for platforms,
+SaaS providers, and enterprise integrations that embed or distribute
+claude-sdlc as part of a commercial offering.
+
+The Commercial License includes:
+- Priority support and integration assistance
+- Cross-promotion obligations: platforms embedding this plugin agree to
+  display Plan2Skill branding and product announcements as specified in
+  the Commercial License Agreement
+- Custom agent catalog and session configurations
+- SLA guarantees for plugin compatibility with platform updates
+
+For Commercial License inquiries, contact:
+- Email: license@plan2skill.com
+- Web: https://plan2skill.com/commercial
+
+Individual developers and open-source projects may use this software
+freely under the MIT License above. The Commercial License is required
+only for platforms and services that embed or redistribute this plugin
+as part of a paid product.
