@@ -1,0 +1,92 @@
+project:
+  type: single-app
+  techStack: [react, typescript]
+
+workflow:
+  complexity:
+    S: { maxFiles: 3, singleDomain: true }
+    M: { maxFiles: 10, maxDomains: 2 }
+    L: { maxFiles: 25, maxDomains: 3 }
+    XL: "everything else"
+  autoQuickFix: true
+  autoMerge: false
+  maxRetries: 2
+  requireArchReview: [XL]
+
+triggers:
+  retro:
+    cadence: bi-weekly
+    mergeThreshold: 5
+  gapAnalysis:
+    cadence: weekly
+    postMergeFor: [L, XL]
+  architectureReview:
+    cadence: monthly
+  securityReview:
+    autoFor: [auth, api]
+  visualReview:
+    autoFor: [components, pages, layouts]
+
+budget:
+  perSession:
+    QUICK_FIX: 1.00
+    TRIAGE: 1.50
+    BRAINSTORM: 4.00
+    PLAN: 2.00
+    EXECUTE: 4.00
+    REVIEW: 2.00
+    INTEGRATION_CHECK: 1.50
+    MERGE: 0.50
+    GAP_ANALYSIS: 2.00
+    RETRO: 2.00
+    POST_MORTEM: 3.00
+    ARCHITECTURE_REVIEW: 3.00
+    SECURITY_REVIEW: 2.00
+    RELEASE: 2.00
+    DOCS_SYNC: 1.50
+    ONBOARD: 2.00
+    HOTFIX: 8.00
+    DEPENDENCY_AUDIT: 2.00
+  monthlyWarning: 120
+  monthlyHardCap: 0
+  preferredModels:
+    governance: sonnet
+    development: sonnet
+    testing: sonnet
+    quickfix: sonnet
+    docs: sonnet
+
+hitl:
+  mergeApproval: [L, XL]
+  budgetApproval: 10.00
+  silentMode: false
+
+git:
+  releaseBranch: "release/next"
+  mainBranch: "main"
+  commitPrefix: "conventional"
+  tagFormat: "v{version}"
+
+defaultAgentConfig:
+  development:
+    model: sonnet
+    testCommand: "npm test"
+    testFramework: vitest
+  testing:
+    model: sonnet
+    testCommand: "npm test -- --coverage"
+    testFramework: vitest
+
+domainDetection:
+  strategy: "directory-scan"
+  patterns:
+    - match: "src/pages/**/*.tsx"
+      type: "page"
+    - match: "src/components/**/*.tsx"
+      type: "component"
+    - match: "src/hooks/**/*.ts"
+      type: "hook"
+    - match: "src/services/**/*.ts"
+      type: "service"
+    - match: "src/store/**/*.ts"
+      type: "state-management"

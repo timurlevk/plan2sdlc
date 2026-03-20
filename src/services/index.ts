@@ -39,6 +39,11 @@ export {
 } from './tech-stack-detector.js';
 
 export {
+  selectTemplate,
+} from './template-selector.js';
+export type { TemplateName } from './template-selector.js';
+
+export {
   startSession,
   recordAgentCost,
   finalizeSession,
@@ -47,6 +52,12 @@ export {
   checkBudget,
   checkMonthlyBudget,
 } from './cost-tracker.js';
+
+export {
+  formatStatus,
+} from './status-formatter.js';
+
+export type { StatusData } from './status-formatter.js';
 
 export {
   loadTechDebt,

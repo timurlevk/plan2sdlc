@@ -1,0 +1,88 @@
+project:
+  type: single-app
+  techStack: [nextjs, react, typescript]
+
+workflow:
+  complexity:
+    S: { maxFiles: 3, singleDomain: true }
+    M: { maxFiles: 10, maxDomains: 2 }
+    L: { maxFiles: 25, maxDomains: 3 }
+    XL: "everything else"
+  autoQuickFix: true
+  autoMerge: false
+  maxRetries: 2
+  requireArchReview: [XL]
+
+triggers:
+  retro:
+    cadence: bi-weekly
+    mergeThreshold: 5
+  gapAnalysis:
+    cadence: weekly
+    postMergeFor: [L, XL]
+  architectureReview:
+    cadence: monthly
+  securityReview:
+    autoFor: [auth, api, middleware]
+
+budget:
+  perSession:
+    QUICK_FIX: 1.00
+    TRIAGE: 2.00
+    BRAINSTORM: 5.00
+    PLAN: 3.00
+    EXECUTE: 5.00
+    REVIEW: 3.00
+    INTEGRATION_CHECK: 2.00
+    MERGE: 0.50
+    GAP_ANALYSIS: 3.00
+    RETRO: 3.00
+    POST_MORTEM: 3.00
+    ARCHITECTURE_REVIEW: 4.00
+    SECURITY_REVIEW: 2.00
+    RELEASE: 3.00
+    DOCS_SYNC: 2.00
+    ONBOARD: 2.00
+    HOTFIX: 10.00
+    DEPENDENCY_AUDIT: 2.00
+  monthlyWarning: 150
+  monthlyHardCap: 0
+  preferredModels:
+    governance: opus
+    development: sonnet
+    testing: sonnet
+    quickfix: sonnet
+    docs: sonnet
+
+hitl:
+  mergeApproval: [L, XL]
+  budgetApproval: 10.00
+  silentMode: false
+
+git:
+  releaseBranch: "release/next"
+  mainBranch: "main"
+  commitPrefix: "conventional"
+  tagFormat: "v{version}"
+
+defaultAgentConfig:
+  development:
+    model: sonnet
+    testCommand: "pnpm test"
+    testFramework: vitest
+  testing:
+    model: sonnet
+    testCommand: "pnpm test:coverage"
+    testFramework: vitest
+
+domainDetection:
+  strategy: "directory-scan"
+  patterns:
+    - match: "app/**/page.tsx"
+      type: "nextjs-page"
+    - match: "app/**/route.ts"
+      type: "nextjs-api-route"
+    - match: "components/**/*.tsx"
+      type: "component"
+    - match: "lib/**/*.ts"
+      type: "library"
