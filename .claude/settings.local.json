@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "claude-sdlc@plan2skill-plugins": true
+  }
+}

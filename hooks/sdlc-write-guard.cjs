@@ -91,6 +91,12 @@ function main() {
       return;
     }
 
+    // Allow if no agent name (running as skill or direct session — e.g., /sdlc init)
+    if (!agentName) {
+      process.exit(0);
+      return;
+    }
+
     if (!GOVERNANCE_AGENTS.includes(agentName)) {
       const result = JSON.stringify({
         decision: 'block',

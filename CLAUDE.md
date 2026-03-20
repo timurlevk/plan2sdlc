@@ -65,6 +65,12 @@ claude-sdlc/
 - `pnpm test` — run tests
 - `pnpm lint` — lint
 
+## Release Rules
+
+- **Bump version on every fix/feature commit.** Update `version` in both `.claude-plugin/plugin.json` and `package.json` before pushing. Users cache plugins by version — if version doesn't change, they won't get the update.
+- Use semver: patch for fixes (0.1.1), minor for features (0.2.0), major for breaking changes (1.0.0).
+- Update `CHANGELOG.md` with every version bump.
+
 ## Key Design Decisions
 
 - **Plugin, not framework** — installs into any Claude Code project, inherits existing conventions

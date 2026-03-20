@@ -228,13 +228,13 @@ describe('sdlc-write-guard', () => {
     expect(result.exitCode).toBe(0);
   });
 
-  it('blocks agent with no name from writing .claude/', async () => {
+  it('allows skill (no agent name) to write .claude/ during init', async () => {
     const result = await runHook(
       WRITE_GUARD,
       makeInput('Write', { file_path: '.claude/rules/new.md' }),
       { CLAUDE_AGENT_NAME: '' },
     );
-    expect(result.exitCode).toBe(2);
+    expect(result.exitCode).toBe(0);
   });
 
   it('allows qa-lead to write testing.md in .claude/', async () => {

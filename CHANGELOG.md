@@ -5,6 +5,23 @@ All notable changes to the claude-sdlc plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-03-20
+
+### Fixed
+- Write guard blocking `/sdlc init` — skills without agent name can now write `.sdlc/` files
+- Hooks renamed from `.js` to `.cjs` to fix ESM/CommonJS conflict
+- Entry-check hook now detects uninitialized projects and prompts `/sdlc init`
+- Plugin manifest: removed unrecognized fields, fixed agents format
+- Critical bugs: backlog format, state.json format, handoff schema, cost domain aggregation, hardCap=0
+
+### Added
+- Privacy policy (PRIVACY.md)
+- Schema versioning (schemaVersion: 1) for migration support
+- Bash command inspection in secrets guard
+- Per-file source attribution on all adapted agents
+- Pre-dispatch cost estimate for M/L/XL tasks
+- `.sdlc/` write protection for non-governance agents
+
 ## [0.1.0] - 2026-03-20
 
 ### Added
