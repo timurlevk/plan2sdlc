@@ -73,6 +73,23 @@ defaultAgentConfig:
     model: sonnet
     testCommand: "npm test"
 
+# Plugin integrations (toggle on/off)
+integrations:
+  superpowers:
+    enabled: true                    # use superpowers skills in sessions
+    brainstorming: true              # BRAINSTORM → superpowers:brainstorming
+    writingPlans: true               # PLAN → superpowers:writing-plans
+    tdd: false                       # EXECUTE → superpowers:test-driven-development
+    debugging: true                  # POST_MORTEM → superpowers:systematic-debugging
+    codeReview: true                 # REVIEW → superpowers:requesting-code-review
+    verification: true               # MERGE → superpowers:verification-before-completion
+  pixelAgents:
+    enabled: false                   # visual agent dashboard (VS Code)
+  playwright:
+    enabled: false                   # E2E browser testing via MCP
+  codeReviewPlugin:
+    enabled: false                   # code-review plugin integration
+
 domainDetection:
   strategy: "directory-scan"
   patterns:
