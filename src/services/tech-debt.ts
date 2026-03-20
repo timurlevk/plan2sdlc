@@ -12,6 +12,7 @@ import type {
 } from '../types/tech-debt.js';
 import { readJsonFile, writeJsonFile } from '../utils/state-io.js';
 import { generateTechDebtId } from '../utils/id-generator.js';
+import { CURRENT_SCHEMA_VERSION, validateSchemaVersion } from '../utils/schema-version.js';
 
 const TECH_DEBT_FILE = 'tech-debt.json';
 
@@ -35,17 +36,22 @@ function emptyRegister(): TechDebtRegister {
  */
 export async function loadTechDebt(sdlcDir: string): Promise<TechDebtRegister> {
   try {
-    return await readJsonFile<TechDebtRegister>(join(sdlcDir, TECH_DEBT_FILE));
+    const data = await readJsonFile<TechDebtRegister>(join(sdlcDir, TECH_DEBT_FILE));
+    validateSchemaVersion(data, TECH_DEBT_FILE);
+    return data;
   } catch {
     return emptyRegister();
   }
 }
 
 /**
- * Save tech debt register.
+ * Save tech debt register (always includes schemaVersion).
  */
 export async function saveTechDebt(sdlcDir: string, register: TechDebtRegister): Promise<void> {
-  await writeJsonFile(join(sdlcDir, TECH_DEBT_FILE), register);
+  await writeJsonFile(join(sdlcDir, TECH_DEBT_FILE), {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    ...register,
+  });
 }
 
 /**

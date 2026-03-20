@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import type { WorkflowState, ActiveWorkflow, DomainLock } from '../types/workflow.js';
 import { readJsonFile, writeJsonFile } from '../utils/state-io.js';
 import { generateWorkflowId } from '../utils/id-generator.js';
+import { CURRENT_SCHEMA_VERSION, validateSchemaVersion } from '../utils/schema-version.js';
 
 const STATE_FILE = 'state.json';
 
@@ -25,17 +26,22 @@ function defaultState(): WorkflowState {
  */
 export async function loadState(sdlcDir: string): Promise<WorkflowState> {
   try {
-    return await readJsonFile<WorkflowState>(join(sdlcDir, STATE_FILE));
+    const data = await readJsonFile<WorkflowState>(join(sdlcDir, STATE_FILE));
+    validateSchemaVersion(data, STATE_FILE);
+    return data;
   } catch {
     return defaultState();
   }
 }
 
 /**
- * Save workflow state to disk.
+ * Save workflow state to disk (always includes schemaVersion).
  */
 export async function saveState(sdlcDir: string, state: WorkflowState): Promise<void> {
-  await writeJsonFile(join(sdlcDir, STATE_FILE), state);
+  await writeJsonFile(join(sdlcDir, STATE_FILE), {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    ...state,
+  });
 }
 
 /**

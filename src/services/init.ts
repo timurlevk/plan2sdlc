@@ -169,12 +169,13 @@ export async function generateConfig(
 
   // 3. backlog.json (empty)
   const backlogPath = join(sdlcDir, 'backlog.json');
-  await writeJsonFile(backlogPath, []);
+  await writeJsonFile(backlogPath, { schemaVersion: 1, items: [] });
   generated.push(backlogPath);
 
   // 4. state.json (empty)
   const statePath = join(sdlcDir, 'state.json');
   await writeJsonFile(statePath, {
+    schemaVersion: 1,
     activeWorkflows: [],
     cadence: { mergesSinceRetro: 0 },
     sessionQueue: [],
@@ -184,7 +185,7 @@ export async function generateConfig(
 
   // 5. tech-debt.json (empty)
   const techDebtPath = join(sdlcDir, 'tech-debt.json');
-  await writeJsonFile(techDebtPath, { items: [], metrics: { total: 0, open: 0, resolved: 0, trend: 'stable' } });
+  await writeJsonFile(techDebtPath, { schemaVersion: 1, items: [], metrics: { total: 0, open: 0, resolvedThisMonth: 0, trend: 'stable' } });
   generated.push(techDebtPath);
 
   // 6. Orchestrator agent

@@ -4,9 +4,14 @@
   "title": "SDLC Plugin Config",
   "description": "Configuration for the claude-sdlc plugin",
   "type": "object",
-  "required": ["project", "workflow", "budget", "hitl", "git"],
+  "required": ["schemaVersion", "project", "workflow", "budget", "hitl", "git"],
   "additionalProperties": false,
   "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version for migration support"
+    },
     "project": {
       "$ref": "#/definitions/ProjectConfig"
     },

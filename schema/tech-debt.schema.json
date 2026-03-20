@@ -4,9 +4,14 @@
   "title": "SDLC Tech Debt Register",
   "description": "Tech debt tracking for the claude-sdlc plugin",
   "type": "object",
-  "required": ["items", "metrics"],
+  "required": ["schemaVersion", "items", "metrics"],
   "additionalProperties": false,
   "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version for migration support"
+    },
     "items": {
       "type": "array",
       "items": { "$ref": "#/definitions/TechDebtItem" }

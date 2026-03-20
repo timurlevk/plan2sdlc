@@ -4,9 +4,14 @@
   "title": "SDLC Agent Registry",
   "description": "Registry of all agents available to the claude-sdlc plugin",
   "type": "object",
-  "required": ["agents"],
+  "required": ["schemaVersion", "agents"],
   "additionalProperties": false,
   "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version for migration support"
+    },
     "agents": {
       "type": "array",
       "items": { "$ref": "#/definitions/AgentEntry" }

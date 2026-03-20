@@ -2,10 +2,22 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://claude-sdlc.dev/schema/backlog.schema.json",
   "title": "SDLC Backlog",
-  "description": "Array of backlog items tracked by the claude-sdlc plugin",
-  "type": "array",
-  "items": {
-    "$ref": "#/definitions/BacklogItem"
+  "description": "Backlog items tracked by the claude-sdlc plugin",
+  "type": "object",
+  "required": ["schemaVersion", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version for migration support"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/BacklogItem"
+      }
+    }
   },
   "definitions": {
     "BacklogItem": {

@@ -5,6 +5,7 @@
   "description": "Log entry for a completed session in the claude-sdlc plugin",
   "type": "object",
   "required": [
+    "schemaVersion",
     "id",
     "workflowId",
     "backlogItemId",
@@ -18,6 +19,11 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version for migration support"
+    },
     "id": {
       "type": "string",
       "description": "Unique session log identifier"

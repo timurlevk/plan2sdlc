@@ -6,8 +6,15 @@ import { join } from 'node:path';
 import type { BacklogItem, BacklogStatus } from '../types/backlog.js';
 import { readJsonFile, writeJsonFile } from '../utils/state-io.js';
 import { generateTaskId } from '../utils/id-generator.js';
+import { CURRENT_SCHEMA_VERSION, validateSchemaVersion } from '../utils/schema-version.js';
 
 const BACKLOG_FILE = 'backlog.json';
+
+/** Wrapper object for the backlog file on disk. */
+interface BacklogFile {
+  schemaVersion: number;
+  items: BacklogItem[];
+}
 
 /** Valid status transitions. Key = current status, value = allowed next statuses. */
 const VALID_TRANSITIONS: Record<BacklogStatus, BacklogStatus[]> = {
@@ -23,20 +30,28 @@ const VALID_TRANSITIONS: Record<BacklogStatus, BacklogStatus[]> = {
 
 /**
  * Load the backlog from disk. Returns an empty array if the file does not exist.
+ * Supports both old (bare array) and new (object wrapper with schemaVersion) formats.
  */
 export async function loadBacklog(sdlcDir: string): Promise<BacklogItem[]> {
   try {
-    return await readJsonFile<BacklogItem[]>(join(sdlcDir, BACKLOG_FILE));
+    const data = await readJsonFile<BacklogFile | BacklogItem[]>(join(sdlcDir, BACKLOG_FILE));
+    // Support both old (bare array) and new (object wrapper) formats
+    if (Array.isArray(data)) return data;
+    validateSchemaVersion(data, BACKLOG_FILE);
+    return data.items;
   } catch {
     return [];
   }
 }
 
 /**
- * Save the backlog array to disk.
+ * Save the backlog array to disk (always writes new wrapper format).
  */
 export async function saveBacklog(sdlcDir: string, items: BacklogItem[]): Promise<void> {
-  await writeJsonFile(join(sdlcDir, BACKLOG_FILE), items);
+  await writeJsonFile(join(sdlcDir, BACKLOG_FILE), {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    items,
+  });
 }
 
 /**

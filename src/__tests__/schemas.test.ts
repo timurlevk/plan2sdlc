@@ -24,103 +24,119 @@ describe('backlog.schema.json', () => {
   const validate = compileSchema('backlog.schema.json');
 
   it('validates a valid backlog', () => {
-    const valid = validate([
-      {
-        id: 'TASK-001',
-        title: 'Add login page',
-        description: 'Implement OAuth login',
-        type: 'feature',
-        complexity: 'M',
-        domains: ['frontend'],
-        tags: ['auth'],
-        status: 'inbox',
-        priority: 'high',
-        created: '2026-01-15T10:00:00Z',
-        updated: '2026-01-15T10:00:00Z',
-        sessions: [],
-      },
-    ]);
+    const valid = validate({
+      schemaVersion: 1,
+      items: [
+        {
+          id: 'TASK-001',
+          title: 'Add login page',
+          description: 'Implement OAuth login',
+          type: 'feature',
+          complexity: 'M',
+          domains: ['frontend'],
+          tags: ['auth'],
+          status: 'inbox',
+          priority: 'high',
+          created: '2026-01-15T10:00:00Z',
+          updated: '2026-01-15T10:00:00Z',
+          sessions: [],
+        },
+      ],
+    });
     expect(validate.errors).toBeNull();
     expect(valid).toBe(true);
   });
 
   it('validates a backlog item with optional fields', () => {
-    const valid = validate([
-      {
-        id: 'TASK-042',
-        title: 'Refactor DB layer',
-        description: 'Extract repository pattern',
-        type: 'refactor',
-        complexity: 'L',
-        domains: ['backend', 'database'],
-        tags: ['tech-debt'],
-        status: 'planned',
-        priority: 'medium',
-        specPath: '.sdlc/specs/TASK-042.md',
-        planPath: '.sdlc/plans/TASK-042.md',
-        workflowId: 'WF-001',
-        created: '2026-02-01T08:30:00Z',
-        updated: '2026-02-02T14:00:00Z',
-        sessions: [
-          {
-            sessionType: 'PLAN',
-            timestamp: '2026-02-01T09:00:00Z',
-            result: 'approved',
-            cost: 0.45,
-            agentsUsed: ['orchestrator', 'architect'],
-          },
-        ],
-        estimatedCost: 2.5,
-        actualCost: 1.8,
-      },
-    ]);
+    const valid = validate({
+      schemaVersion: 1,
+      items: [
+        {
+          id: 'TASK-042',
+          title: 'Refactor DB layer',
+          description: 'Extract repository pattern',
+          type: 'refactor',
+          complexity: 'L',
+          domains: ['backend', 'database'],
+          tags: ['tech-debt'],
+          status: 'planned',
+          priority: 'medium',
+          specPath: '.sdlc/specs/TASK-042.md',
+          planPath: '.sdlc/plans/TASK-042.md',
+          workflowId: 'WF-001',
+          created: '2026-02-01T08:30:00Z',
+          updated: '2026-02-02T14:00:00Z',
+          sessions: [
+            {
+              sessionType: 'PLAN',
+              timestamp: '2026-02-01T09:00:00Z',
+              result: 'approved',
+              cost: 0.45,
+              agentsUsed: ['orchestrator', 'architect'],
+            },
+          ],
+          estimatedCost: 2.5,
+          actualCost: 1.8,
+        },
+      ],
+    });
     expect(validate.errors).toBeNull();
     expect(valid).toBe(true);
   });
 
   it('rejects an empty backlog item', () => {
-    expect(validate([{}])).toBe(false);
+    expect(validate({ schemaVersion: 1, items: [{}] })).toBe(false);
+  });
+
+  it('rejects missing schemaVersion', () => {
+    expect(validate({ items: [] })).toBe(false);
   });
 
   it('rejects invalid task id format', () => {
     expect(
-      validate([
-        {
-          id: 'BAD-ID',
-          title: 'Test',
-          description: 'Test',
-          type: 'feature',
-          complexity: 'S',
-          domains: [],
-          tags: [],
-          status: 'inbox',
-          priority: 'low',
-          created: '2026-01-01T00:00:00Z',
-          updated: '2026-01-01T00:00:00Z',
-          sessions: [],
-        },
-      ]),
+      validate({
+        schemaVersion: 1,
+        items: [
+          {
+            id: 'BAD-ID',
+            title: 'Test',
+            description: 'Test',
+            type: 'feature',
+            complexity: 'S',
+            domains: [],
+            tags: [],
+            status: 'inbox',
+            priority: 'low',
+            created: '2026-01-01T00:00:00Z',
+            updated: '2026-01-01T00:00:00Z',
+            sessions: [],
+          },
+        ],
+      }),
     ).toBe(false);
   });
 
   it('rejects invalid status enum', () => {
     expect(
-      validate([
-        {
-          id: 'TASK-001',
-          title: 'Test',
-          description: 'Test',
-          type: 'feature',
-          complexity: 'S',
-          domains: [],
-          tags: [],
-          status: 'unknown-status',
-          priority: 'low',
-          created: '2026-01-01T00:00:00Z',
-          updated: '2026-01-01T00:00:00Z',
-          sessions: [],
-        },
-      ]),
+      validate({
+        schemaVersion: 1,
+        items: [
+          {
+            id: 'TASK-001',
+            title: 'Test',
+            description: 'Test',
+            type: 'feature',
+            complexity: 'S',
+            domains: [],
+            tags: [],
+            status: 'unknown-status',
+            priority: 'low',
+            created: '2026-01-01T00:00:00Z',
+            updated: '2026-01-01T00:00:00Z',
+            sessions: [],
+          },
+        ],
+      }),
     ).toBe(false);
   });
 });
@@ -132,6 +148,7 @@ describe('state.schema.json', () => {
 
   it('validates a valid workflow state', () => {
     const valid = validate({
+      schemaVersion: 1,
       activeWorkflows: [
         {
           id: 'WF-001',
@@ -172,6 +189,7 @@ describe('state.schema.json', () => {
 
   it('validates a minimal workflow state', () => {
     const valid = validate({
+      schemaVersion: 1,
       activeWorkflows: [],
       cadence: { mergesSinceRetro: 0 },
       sessionQueue: [],
@@ -182,12 +200,24 @@ describe('state.schema.json', () => {
   });
 
   it('rejects missing required fields', () => {
-    expect(validate({ activeWorkflows: [] })).toBe(false);
+    expect(validate({ schemaVersion: 1, activeWorkflows: [] })).toBe(false);
+  });
+
+  it('rejects missing schemaVersion', () => {
+    expect(
+      validate({
+        activeWorkflows: [],
+        cadence: { mergesSinceRetro: 0 },
+        sessionQueue: [],
+        domainLocks: {},
+      }),
+    ).toBe(false);
   });
 
   it('rejects invalid workflow id format', () => {
     expect(
       validate({
+        schemaVersion: 1,
         activeWorkflows: [
           {
             id: 'BAD',
@@ -214,6 +244,7 @@ describe('session-log.schema.json', () => {
 
   it('validates a valid session log', () => {
     const valid = validate({
+      schemaVersion: 1,
       id: 'SL-001',
       workflowId: 'WF-001',
       backlogItemId: 'TASK-001',
@@ -243,6 +274,7 @@ describe('session-log.schema.json', () => {
   it('rejects missing agents field', () => {
     expect(
       validate({
+        schemaVersion: 1,
         id: 'SL-001',
         workflowId: 'WF-001',
         backlogItemId: 'TASK-001',
@@ -259,6 +291,7 @@ describe('session-log.schema.json', () => {
   it('rejects invalid agent result enum', () => {
     expect(
       validate({
+        schemaVersion: 1,
         id: 'SL-001',
         workflowId: 'WF-001',
         backlogItemId: 'TASK-001',
@@ -292,6 +325,7 @@ describe('config.schema.json', () => {
 
   it('validates a valid config', () => {
     const valid = validate({
+      schemaVersion: 1,
       project: {
         name: 'my-app',
         type: 'single-app',
@@ -341,6 +375,7 @@ describe('config.schema.json', () => {
 
   it('validates a minimal config', () => {
     const valid = validate({
+      schemaVersion: 1,
       project: { name: 'test', type: 'auto' },
       workflow: { maxRetries: 3 },
       budget: { monthlyWarning: 50, monthlyHardCap: 100 },
@@ -354,6 +389,7 @@ describe('config.schema.json', () => {
   it('rejects missing required project field', () => {
     expect(
       validate({
+        schemaVersion: 1,
         workflow: { maxRetries: 3 },
         budget: { monthlyWarning: 50, monthlyHardCap: 100 },
         hitl: {},
@@ -365,6 +401,7 @@ describe('config.schema.json', () => {
   it('rejects invalid project type', () => {
     expect(
       validate({
+        schemaVersion: 1,
         project: { name: 'test', type: 'invalid-type' },
         workflow: { maxRetries: 3 },
         budget: { monthlyWarning: 50, monthlyHardCap: 100 },
@@ -382,6 +419,7 @@ describe('registry.schema.json', () => {
 
   it('validates a valid registry', () => {
     const valid = validate({
+      schemaVersion: 1,
       agents: [
         {
           name: 'orchestrator',
@@ -419,7 +457,7 @@ describe('registry.schema.json', () => {
   });
 
   it('validates an empty registry', () => {
-    const valid = validate({ agents: [] });
+    const valid = validate({ schemaVersion: 1, agents: [] });
     expect(validate.errors).toBeNull();
     expect(valid).toBe(true);
   });
@@ -427,6 +465,7 @@ describe('registry.schema.json', () => {
   it('rejects agent with invalid category', () => {
     expect(
       validate({
+        schemaVersion: 1,
         agents: [
           {
             name: 'bad-agent',
@@ -446,6 +485,7 @@ describe('registry.schema.json', () => {
   it('rejects agent missing required name', () => {
     expect(
       validate({
+        schemaVersion: 1,
         agents: [
           {
             description: 'test',
@@ -469,6 +509,7 @@ describe('tech-debt.schema.json', () => {
 
   it('validates a valid tech debt register', () => {
     const valid = validate({
+      schemaVersion: 1,
       items: [
         {
           id: 'TD-001',
@@ -500,6 +541,7 @@ describe('tech-debt.schema.json', () => {
 
   it('validates a resolved tech debt item', () => {
     const valid = validate({
+      schemaVersion: 1,
       items: [
         {
           id: 'TD-002',
@@ -532,6 +574,7 @@ describe('tech-debt.schema.json', () => {
   it('rejects invalid tech debt id format', () => {
     expect(
       validate({
+        schemaVersion: 1,
         items: [
           {
             id: 'INVALID',
@@ -555,6 +598,6 @@ describe('tech-debt.schema.json', () => {
   });
 
   it('rejects missing metrics', () => {
-    expect(validate({ items: [] })).toBe(false);
+    expect(validate({ schemaVersion: 1, items: [] })).toBe(false);
   });
 });

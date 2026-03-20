@@ -197,12 +197,14 @@ describe('generateConfig', () => {
     expect(await fileExistsCheck(join(sdlcDir, 'tech-debt.json'))).toBe(true);
 
     // Verify empty state files
-    const backlog = await readJson<unknown[]>(join(sdlcDir, 'backlog.json'));
-    expect(backlog).toEqual([]);
+    const backlog = await readJson<{ schemaVersion: number; items: unknown[] }>(join(sdlcDir, 'backlog.json'));
+    expect(backlog.schemaVersion).toBe(1);
+    expect(backlog.items).toEqual([]);
 
-    const state = await readJson<{ activeWorkflows: unknown[]; cadence: { mergesSinceRetro: number }; sessionQueue: unknown[]; domainLocks: Record<string, unknown> }>(
+    const state = await readJson<{ schemaVersion: number; activeWorkflows: unknown[]; cadence: { mergesSinceRetro: number }; sessionQueue: unknown[]; domainLocks: Record<string, unknown> }>(
       join(sdlcDir, 'state.json'),
     );
+    expect(state.schemaVersion).toBe(1);
     expect(state.activeWorkflows).toEqual([]);
     expect(state.cadence.mergesSinceRetro).toBe(0);
     expect(state.domainLocks).toEqual({});
