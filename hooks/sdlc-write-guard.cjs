@@ -26,6 +26,23 @@ const SDLC_STATE_AGENTS = [
   'tech-lead',
 ];
 
+/**
+ * Check if agent name matches any allowed name.
+ * Handles namespaced names like "claude-sdlc:orchestrator" → matches "orchestrator"
+ */
+function agentMatches(agentName, allowedList) {
+  if (!agentName) return false;
+  // Direct match
+  if (allowedList.includes(agentName)) return true;
+  // Namespaced match: "plugin:agent" → check "agent" part
+  if (agentName.includes(':')) {
+    const shortName = agentName.split(':').pop();
+    if (shortName && allowedList.includes(shortName)) return true;
+  }
+  // Partial match: agent name contains one of the allowed names
+  return allowedList.some(allowed => agentName.includes(allowed));
+}
+
 // qa-lead can only modify these files inside .claude/
 const QA_LEAD_ALLOWED = ['testing.md', 'e2e.md'];
 
@@ -61,7 +78,7 @@ function main() {
     const toolInput = data.tool_input || {};
     const filePath = toolInput.file_path || '';
 
-    const agentName = process.env.CLAUDE_AGENT_NAME || '';
+    const agentName = process.env.CLAUDE_AGENT_NAME || process.env.AGENT_NAME || '';
 
     // Check .sdlc/ state file protection
     if (isSdlcPath(filePath)) {
@@ -72,7 +89,7 @@ function main() {
         return;
       }
       // Block non-governance agents
-      if (!SDLC_STATE_AGENTS.includes(agentName)) {
+      if (!agentMatches(agentName, SDLC_STATE_AGENTS)) {
         const result = JSON.stringify({
           decision: 'block',
           reason: 'SDLC write guard: only orchestrator and governance agents can modify .sdlc/ state files',
@@ -97,7 +114,7 @@ function main() {
       return;
     }
 
-    if (!GOVERNANCE_AGENTS.includes(agentName)) {
+    if (!agentMatches(agentName, GOVERNANCE_AGENTS)) {
       const result = JSON.stringify({
         decision: 'block',
         reason: 'SDLC write guard: only governance agents can modify .claude/ files',
@@ -108,7 +125,7 @@ function main() {
     }
 
     // Special case: qa-lead can only modify testing.md or e2e.md
-    if (agentName === 'qa-lead') {
+    if (agentName === 'qa-lead' || agentName.includes('qa-lead')) {
       const normalized = filePath.replace(/\\/g, '/');
       const fileName = normalized.split('/').pop() || '';
       if (!QA_LEAD_ALLOWED.includes(fileName)) {
