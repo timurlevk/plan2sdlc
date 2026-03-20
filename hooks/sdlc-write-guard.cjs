@@ -65,7 +65,14 @@ function main() {
 
     // Check .sdlc/ state file protection
     if (isSdlcPath(filePath)) {
-      if (!agentName || !SDLC_STATE_AGENTS.includes(agentName)) {
+      // Allow if no agent name set (running as skill or direct Claude session)
+      // This enables /sdlc init and other skills to create .sdlc/ files
+      if (!agentName) {
+        process.exit(0);
+        return;
+      }
+      // Block non-governance agents
+      if (!SDLC_STATE_AGENTS.includes(agentName)) {
         const result = JSON.stringify({
           decision: 'block',
           reason: 'SDLC write guard: only orchestrator and governance agents can modify .sdlc/ state files',
