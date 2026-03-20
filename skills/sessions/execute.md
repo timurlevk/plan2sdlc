@@ -1,6 +1,6 @@
 ---
 name: execute
-description: Domain teams implement code in isolated worktrees
+description: Domain teams implement code in isolated worktrees — optionally uses superpowers:test-driven-development
 ---
 
 # EXECUTE Session
@@ -17,8 +17,9 @@ Domain teams implement the planned changes in isolated git worktrees.
 1. **Create worktree** per affected domain (branch from release)
 2. **Dispatch domain-developer + domain-tester** per domain
 3. Developer implements following the plan:
-   - Write tests first (TDD) if superpowers:test-driven-development available
-   - Implement feature/fix
+   - If superpowers:test-driven-development is available and orchestrator decided to use it:
+     `Use the Skill tool: skill: "superpowers:test-driven-development"`
+   - Otherwise: write tests first, then implement
    - Run domain test suite: `{test_command}`
 4. **Track budget** per domain agent
 5. On completion, write **SessionHandoff** with:

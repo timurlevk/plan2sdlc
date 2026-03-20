@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Decompose spec into domain-level tasks with execution waves
+description: Decompose spec into domain-level tasks — invokes superpowers:writing-plans if available
 ---
 
 # PLAN Session
@@ -13,19 +13,31 @@ Decompose an approved spec into concrete, domain-level tasks.
 
 ## Process
 
+### With superpowers plugin (preferred)
+
+If superpowers:writing-plans skill is available, invoke it:
+
+```
+Use the Skill tool: skill: "superpowers:writing-plans"
+```
+
+Superpowers will handle: reading spec → decomposing → creating step-by-step plan → review.
+
+After plan is written and approved, return control to the SDLC orchestrator for EXECUTE.
+
+### Without superpowers (fallback)
+
 1. **Dispatch governance-architect**
-2. If superpowers:writing-plans skill available → delegate to it
-3. Otherwise:
-   a. Read the spec/requirements
-   b. Identify affected domains
-   c. Decompose into domain-level tasks
-   d. Organize into execution waves (parallel where possible)
-   e. For each task specify:
-      - Domain and assigned agent
-      - Description and acceptance criteria
-      - Dependencies on other tasks
-      - Test requirements
-   f. **HITL: user approves plan**
+2. Read the spec/requirements from handoff artifacts
+3. Identify affected domains
+4. Decompose into domain-level tasks
+5. Organize into execution waves (parallel where possible)
+6. For each task specify:
+   - Domain and assigned agent
+   - Description and acceptance criteria
+   - Dependencies on other tasks
+   - Test requirements
+7. **HITL: user approves plan**
 
 ## Participants
 - governance-architect (mandatory)
@@ -37,4 +49,4 @@ Plan approval before proceeding.
 - Implementation plan document
 - Plan path stored in handoff artifacts
 - Domain assignments for EXECUTE
-- Chains to EXECUTE
+- **Chains to EXECUTE** (orchestrator handles transition)

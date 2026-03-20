@@ -13,8 +13,10 @@ Code review gate — governance-reviewer evaluates implementation quality.
 
 ## Process
 1. Dispatch governance-reviewer
-2. If superpowers:requesting-code-review available → delegate
-3. If code-review plugin available → use code-review:code-review
+2. If superpowers:requesting-code-review available and orchestrator approved:
+   `Use the Skill tool: skill: "superpowers:requesting-code-review"`
+3. If code-review plugin available:
+   `Use the Skill tool: skill: "code-review:code-review"`
 4. Otherwise built-in review:
    a. Read implementation code
    b. Run typecheck: `pnpm build` or `tsc --noEmit`

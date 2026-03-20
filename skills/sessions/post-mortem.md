@@ -14,7 +14,8 @@ Root cause analysis after E2E failures or repeated integration failures.
 
 ## Process
 1. Dispatch governance-tech-lead
-2. If superpowers:systematic-debugging available → delegate
+2. If superpowers:systematic-debugging available and orchestrator approved:
+   `Use the Skill tool: skill: "superpowers:systematic-debugging"`
 3. Otherwise:
    a. Collect evidence: test logs, error messages, recent changes
    b. Identify root cause (not just symptom)
