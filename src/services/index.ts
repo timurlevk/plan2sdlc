@@ -69,3 +69,10 @@ export {
   getItemsBySeverity,
   linkToTask,
 } from './tech-debt.js';
+
+export {
+  scanEcosystem,
+  type ConventionDecision,
+  type ConventionEntry,
+  type EcosystemReport,
+} from './ecosystem-scanner.js';
