@@ -7,7 +7,7 @@
  * and non-orchestrator/governance agents from modifying .sdlc/ state files.
  */
 
-const WRITE_TOOLS = ['Edit', 'Write'];
+const WRITE_TOOLS = ['Edit', 'Write', 'Bash'];
 
 const GOVERNANCE_AGENTS = [
   'orchestrator',
@@ -84,18 +84,39 @@ function main() {
     const agentName = data.agent_type || process.env.CLAUDE_AGENT_NAME || process.env.AGENT_NAME || '';
 
     // ORCHESTRATOR SOURCE CODE GUARD:
-    // If agent is orchestrator, block writes to anything except .sdlc/ and docs/
-    if (agentMatches(agentName, ['orchestrator']) && !isSdlcPath(filePath) && !isClaudePath(filePath)) {
-      const normalized = filePath.replace(/\\/g, '/');
-      const isDocsPath = normalized.startsWith('docs/') || normalized.includes('/docs/');
-      if (!isDocsPath) {
-        const result = JSON.stringify({
-          decision: 'block',
-          reason: 'SDLC write guard: orchestrator can only write to .sdlc/ and docs/ — use /sdlc execute for code changes',
-        });
-        process.stdout.write(result);
-        process.exit(2);
+    // Orchestrator must not write application code — only .sdlc/ and docs/
+    if (agentMatches(agentName, ['orchestrator'])) {
+      // Block Bash write commands entirely for orchestrator
+      if (toolName === 'Bash') {
+        var command = (toolInput.command || '').toLowerCase();
+        // Allow read-only commands
+        var isReadOnly = /^\s*(git\s+(status|log|diff|show|branch|rev-parse)|ls|cat|head|tail|wc|find|grep|rg|test\s|pnpm\s+test|npm\s+test|node\s+-e)/.test(command);
+        if (!isReadOnly) {
+          var result0 = JSON.stringify({
+            decision: 'block',
+            reason: 'SDLC write guard: orchestrator cannot use Bash for write operations — use /sdlc execute for code changes',
+          });
+          process.stdout.write(result0);
+          process.exit(2);
+          return;
+        }
+        process.exit(0);
         return;
+      }
+
+      // Block Edit/Write to source code paths
+      if (!isSdlcPath(filePath) && !isClaudePath(filePath)) {
+        var normalized0 = filePath.replace(/\\/g, '/');
+        var isDocsPath = normalized0.startsWith('docs/') || normalized0.includes('/docs/');
+        if (!isDocsPath) {
+          var result1 = JSON.stringify({
+            decision: 'block',
+            reason: 'SDLC write guard: orchestrator can only write to .sdlc/ and docs/ — use /sdlc execute for code changes',
+          });
+          process.stdout.write(result1);
+          process.exit(2);
+          return;
+        }
       }
     }
 

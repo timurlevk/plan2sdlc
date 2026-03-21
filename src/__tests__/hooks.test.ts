@@ -313,6 +313,40 @@ describe('sdlc-write-guard', () => {
     expect(result.exitCode).toBe(0);
   });
 
+  it('blocks orchestrator Bash write commands', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'echo "code" > src/index.ts' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(2);
+    const output = JSON.parse(result.stdout);
+    expect(output.reason).toContain('orchestrator cannot use Bash');
+  });
+
+  it('allows orchestrator Bash read-only commands', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git status' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('allows orchestrator Bash test commands', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'pnpm test --filter api' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('allows non-orchestrator Bash write commands', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'echo "code" > src/index.ts' }, agent_type: 'api-developer' }),
+    );
+    expect(result.exitCode).toBe(0);
+  });
+
   it('allows orchestrator to write docs/', async () => {
     const result = await runHook(
       WRITE_GUARD,
