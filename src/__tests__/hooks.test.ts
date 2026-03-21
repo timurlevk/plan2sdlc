@@ -313,7 +313,7 @@ describe('sdlc-write-guard', () => {
     expect(result.exitCode).toBe(0);
   });
 
-  it('blocks orchestrator Bash write commands', async () => {
+  it('blocks orchestrator Bash echo redirect', async () => {
     const result = await runHook(
       WRITE_GUARD,
       JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'echo "code" > src/index.ts' }, agent_type: 'orchestrator' }),
@@ -323,7 +323,31 @@ describe('sdlc-write-guard', () => {
     expect(output.reason).toContain('orchestrator cannot use Bash');
   });
 
-  it('allows orchestrator Bash read-only commands', async () => {
+  it('blocks orchestrator Bash cat heredoc', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'cat > src/app.ts << EOF\ncode\nEOF' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(2);
+  });
+
+  it('blocks orchestrator Bash sed -i', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'sed -i s/old/new/ src/file.ts' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(2);
+  });
+
+  it('blocks orchestrator Bash git commit', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git add . && git commit -m fix' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(2);
+  });
+
+  it('allows orchestrator Bash git status', async () => {
     const result = await runHook(
       WRITE_GUARD,
       JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git status' }, agent_type: 'orchestrator' }),
@@ -331,10 +355,26 @@ describe('sdlc-write-guard', () => {
     expect(result.exitCode).toBe(0);
   });
 
-  it('allows orchestrator Bash test commands', async () => {
+  it('allows orchestrator Bash git diff', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git diff --name-only HEAD~1' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('allows orchestrator Bash pnpm test', async () => {
     const result = await runHook(
       WRITE_GUARD,
       JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'pnpm test --filter api' }, agent_type: 'orchestrator' }),
+    );
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('allows orchestrator Bash cat read', async () => {
+    const result = await runHook(
+      WRITE_GUARD,
+      JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'cat src/index.ts' }, agent_type: 'orchestrator' }),
     );
     expect(result.exitCode).toBe(0);
   });

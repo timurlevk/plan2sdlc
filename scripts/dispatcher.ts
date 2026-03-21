@@ -122,7 +122,7 @@ function runAgent(task: PlanTask): { output: string; exitCode: number } {
     timeout: TASK_TIMEOUT,
     encoding: 'utf-8',
     stdio: ['pipe', 'pipe', 'pipe'],
-    env: { ...process.env },
+    env: { ...process.env, CLAUDECODE: undefined },  // unset to allow nested claude -p
   });
 
   return {

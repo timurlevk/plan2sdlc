@@ -88,10 +88,10 @@ function main() {
     if (agentMatches(agentName, ['orchestrator'])) {
       // Block Bash write commands entirely for orchestrator
       if (toolName === 'Bash') {
-        var command = (toolInput.command || '').toLowerCase();
-        // Allow read-only commands
-        var isReadOnly = /^\s*(git\s+(status|log|diff|show|branch|rev-parse)|ls|cat|head|tail|wc|find|grep|rg|test\s|pnpm\s+test|npm\s+test|node\s+-e)/.test(command);
-        if (!isReadOnly) {
+        var command = toolInput.command || '';
+        // Block any Bash command that writes to filesystem
+        var hasWritePattern = /(?:>|>>|tee\s|sed\s+-i|mv\s|cp\s|rm\s|mkdir\s|touch\s|chmod\s|chown\s|ln\s|install\s|cat\s*>|cat\s*<<|echo\s+.*>|printf\s+.*>|git\s+(?:add|commit|push|merge|rebase|checkout\s+-b|reset|stash)|npm\s+(?:install|uninstall|publish)|pnpm\s+(?:add|remove|install|publish))/i.test(command);
+        if (hasWritePattern) {
           var result0 = JSON.stringify({
             decision: 'block',
             reason: 'SDLC write guard: orchestrator cannot use Bash for write operations — use /sdlc execute for code changes',
