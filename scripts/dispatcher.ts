@@ -26,8 +26,7 @@ const projectDir = process.env['SDLC_PROJECT_DIR'] || process.cwd();
 const sdlcDir = join(projectDir, '.sdlc');
 const planPath = join(sdlcDir, 'plan.json');
 const MAX_CONCURRENCY = parseInt(process.env['SDLC_MAX_CONCURRENCY'] || '3', 10);
-const MAX_TURNS_PER_TASK = 30;
-const MAX_BUDGET_PER_TASK = 5.0;
+const MAX_TURNS_PER_TASK = 200;
 
 // ---------------------------------------------------------------------------
 // Logging
@@ -134,11 +133,6 @@ async function runTask(task: PlanTask): Promise<void> {
   }
 
   const prompt = buildTaskPrompt(task);
-  const abortController = new AbortController();
-
-  // Timeout
-  const timeout = setTimeout(() => abortController.abort(), 10 * 60 * 1000);
-
   try {
     let fullOutput = '';
 
@@ -146,12 +140,10 @@ async function runTask(task: PlanTask): Promise<void> {
       prompt,
       options: {
         cwd: workDir,
-        abortController,
         allowedTools: ['Read', 'Edit', 'Write', 'Bash', 'Glob', 'Grep'],
         permissionMode: 'bypassPermissions',
         model: 'sonnet',
         maxTurns: MAX_TURNS_PER_TASK,
-        maxBudgetUsd: MAX_BUDGET_PER_TASK,
         persistSession: false,
         systemPrompt: `You are ${task.agent}, a domain developer for the ${task.domain} domain. You write code ONLY within ${task.writablePath}.`,
       },
@@ -197,8 +189,6 @@ async function runTask(task: PlanTask): Promise<void> {
   } catch (err: any) {
     task.status = 'failed';
     task.error = err.message?.slice(0, 300) || 'Unknown error';
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
