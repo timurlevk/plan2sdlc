@@ -54,9 +54,14 @@ Generate all config files (user reviews each):
 - `.sdlc/backlog.json` (empty)
 - `.sdlc/state.json` (empty)
 - `.sdlc/tech-debt.json` (empty)
-- Orchestrator agent at `.claude/agents/orchestrator.md`
-- Per-domain agents: `{domain}-developer.md`, `{domain}-tester.md`
-- Governance agents: `governance-architect.md`, `governance-reviewer.md`
+- `.sdlc/ledger.md` (empty project ledger index)
+- `.sdlc/ledger/` directory (for release archives)
+- Orchestrator agent at `.claude/agents/orchestrator.md` (color: blue)
+- Per-domain developers: `{domain}-developer.md` (color: green)
+- Per-domain testers: `{domain}-tester.md` (color: yellow)
+- Governance agents: `governance-architect.md` (color: cyan), `governance-reviewer.md` (color: red)
+
+**IMPORTANT:** Every generated agent MUST have a `color` field in frontmatter for visual identification in the terminal. Use the colors above consistently.
 - Path-scoped rules per domain
 - `.gitignore` additions
 - Backup existing .claude/ structure to `.sdlc/backup/`
