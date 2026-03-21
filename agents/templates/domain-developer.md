@@ -1,4 +1,5 @@
 ---
+# generated-by: claude-sdlc@2.2.0
 name: {{domain}}-developer
 description: Developer for {{domain}} domain. Implements specs within {{path}}.
 model: {{model}}

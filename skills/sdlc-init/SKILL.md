@@ -56,12 +56,14 @@ Generate all config files (user reviews each):
 - `.sdlc/tech-debt.json` (empty)
 - `.sdlc/ledger.md` (empty project ledger index)
 - `.sdlc/ledger/` directory (for release archives)
-- Orchestrator agent at `.claude/agents/orchestrator.md` (color: blue)
-- Per-domain developers: `{domain}-developer.md` (color: green)
-- Per-domain testers: `{domain}-tester.md` (color: yellow)
-- Governance agents: `governance-architect.md` (color: cyan), `governance-reviewer.md` (color: red)
+- **DO NOT generate orchestrator.md** — it ships with the plugin and updates automatically
+- Per-domain developers: `.claude/agents/{domain}-developer.md` (color: green)
+- Per-domain testers: `.claude/agents/{domain}-tester.md` (color: yellow)
 
-**IMPORTANT:** Every generated agent MUST have a `color` field in frontmatter for visual identification in the terminal. Use the colors above consistently.
+**IMPORTANT:**
+- Every generated agent MUST have `# generated-by: claude-sdlc@{version}` as first line inside frontmatter
+- Every agent MUST have a `color` field (developers=green, testers=yellow)
+- If a local `orchestrator.md` exists in `.claude/agents/`, DELETE it — the plugin ships its own
 - Path-scoped rules per domain
 - `.gitignore` additions
 - Backup existing .claude/ structure to `.sdlc/backup/`

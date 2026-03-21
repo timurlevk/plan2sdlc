@@ -210,13 +210,10 @@ export async function generateConfig(
   await writeJsonFile(techDebtPath, { schemaVersion: 1, items: [], metrics: { total: 0, open: 0, resolvedThisMonth: 0, trend: 'stable' } });
   generated.push(techDebtPath);
 
-  // 6. Orchestrator agent
-  const orchestratorFiles = await generateOrchestratorAgent(
-    projectDir,
-    pluginDir,
-    initResult.domains.domains,
-  );
-  generated.push(...orchestratorFiles);
+  // 6. Orchestrator agent — NOT generated locally.
+  // The plugin ships orchestrator.md directly via plugin.json "agents" field.
+  // This ensures plugin updates automatically update the orchestrator prompt.
+  // Project-specific context (domains, tech stack) is injected via SessionStart hook.
 
   // 7. Domain agents
   const domainFiles = await generateDomainAgents(

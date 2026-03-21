@@ -329,6 +329,62 @@ function ensureMcpDeps() {
   }
 }
 
+/**
+ * Check if user's generated agents are outdated vs plugin version.
+ * If mismatch found, warn the user.
+ */
+function checkAgentVersions() {
+  var pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || '';
+  if (!pluginRoot) return null;
+
+  var cwd = process.env.SDLC_PROJECT_DIR || process.cwd();
+  var agentsDir = path.join(cwd, '.claude', 'agents');
+  if (!fs.existsSync(agentsDir)) return null;
+
+  // Read plugin version
+  var pluginPkgPath = path.join(pluginRoot, 'package.json');
+  var pluginVersion = '0.0.0';
+  try {
+    var pkg = JSON.parse(fs.readFileSync(pluginPkgPath, 'utf-8'));
+    pluginVersion = pkg.version || '0.0.0';
+  } catch (_e) { return null; }
+
+  // Check each agent file for generated-by comment
+  var outdated = [];
+  var obsoleteOrchestrator = false;
+  try {
+    var files = fs.readdirSync(agentsDir);
+    for (var i = 0; i < files.length; i++) {
+      if (!files[i].endsWith('.md')) continue;
+      var content = fs.readFileSync(path.join(agentsDir, files[i]), 'utf-8');
+
+      // Check if this is a locally generated orchestrator (should not exist)
+      if (files[i] === 'orchestrator.md' || content.includes('name: claude-sdlc:orchestrator') || content.includes('name: orchestrator')) {
+        obsoleteOrchestrator = true;
+      }
+
+      // Check generated-by version
+      var match = content.match(/# generated-by: claude-sdlc@([^\s]+)/);
+      if (match) {
+        var agentVersion = match[1];
+        if (agentVersion !== pluginVersion) {
+          outdated.push(files[i] + ' (v' + agentVersion + ')');
+        }
+      }
+    }
+  } catch (_e) { return null; }
+
+  var warnings = [];
+  if (obsoleteOrchestrator) {
+    warnings.push('LOCAL ORCHESTRATOR DETECTED: .claude/agents/orchestrator.md overrides the plugin orchestrator. Delete it to use the latest plugin version.');
+  }
+  if (outdated.length > 0) {
+    warnings.push('OUTDATED AGENTS (plugin is v' + pluginVersion + '): ' + outdated.join(', ') + '. Run /sdlc init to regenerate.');
+  }
+
+  return warnings.length > 0 ? warnings.join('\n') : null;
+}
+
 function main() {
   // Ensure MCP registry deps on every session start
   ensureMcpDeps();
@@ -391,6 +447,13 @@ function main() {
 
   // Case 3: Running as orchestrator with SDLC initialized — inject state
   var payload = buildStateInjection(sdlcDir);
+
+  // Check for outdated agents
+  var versionWarning = checkAgentVersions();
+  if (versionWarning) {
+    payload = payload + '\n\n## AGENT VERSION WARNING\n' + versionWarning;
+  }
+
   var result3 = JSON.stringify({ result: payload });
   process.stdout.write(result3);
   process.exit(0);

@@ -1,4 +1,5 @@
 ---
+# generated-by: claude-sdlc@2.2.0
 name: {{domain}}-tester
 description: Tester for {{domain}} domain. Writes and runs tests within {{path}}.
 model: {{model}}
