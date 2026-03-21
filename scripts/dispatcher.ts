@@ -159,7 +159,8 @@ async function runTask(task: PlanTask): Promise<void> {
 
     // Commit changes in worktree
     if (useWorktree && worktreeInfo) {
-      commitWorktree(worktreeInfo.path, `feat(${task.domain}): ${task.description.slice(0, 50)}`);
+      const committed = commitWorktree(worktreeInfo.path, `feat(${task.domain}): ${task.description.slice(0, 50)}`);
+      log(`  💾 ${task.id} ${committed ? 'committed' : 'no new changes to commit'}`);
     }
 
     // Boundary check

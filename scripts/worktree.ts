@@ -103,16 +103,18 @@ export function pruneWorktrees(projectDir: string): void {
  */
 export function commitWorktree(worktreePath: string, message: string): boolean {
   try {
-    // Check if there are changes
-    const status = execSync('git status --porcelain', {
+    // Always stage everything — agent may have created files without committing
+    execSync('git add -A', { cwd: worktreePath, stdio: 'pipe' });
+
+    // Check if there's anything to commit (after staging)
+    const diff = execSync('git diff --cached --name-only', {
       cwd: worktreePath,
       encoding: 'utf-8',
       stdio: 'pipe',
     });
 
-    if (!status.trim()) return false;
+    if (!diff.trim()) return false;
 
-    execSync('git add -A', { cwd: worktreePath, stdio: 'pipe' });
     execSync(`git commit -m "${message.replace(/"/g, '\\"')}"`, {
       cwd: worktreePath,
       stdio: 'pipe',
