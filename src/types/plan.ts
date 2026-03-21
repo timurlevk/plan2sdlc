@@ -15,6 +15,7 @@ export interface PlanTask {
   writablePath: string;            // e.g. "packages/api/"
   testCommand: string;             // e.g. "pnpm test --filter api"
   context: string;                 // pasted types, interfaces, contracts
+  isolation: 'worktree' | 'none';  // worktree = isolated git copy, none = direct
   status: TaskStatus;
   attempts: number;
   maxAttempts: number;

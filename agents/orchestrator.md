@@ -102,9 +102,10 @@ For M/L/XL: ask user to confirm before proceeding.
 1. Break into sequential execution waves
 2. For each task: domain, agent, description, acceptance criteria, test command
 3. Paste actual context (types, interfaces, patterns) into each task's `context` field
-4. Write `.sdlc/plan.json` using the Write tool
-5. Create TaskCreate checklist for user visibility (see Progress Tracking)
-6. Show plan summary, ask user to confirm
+4. For each task that modifies code — set `"isolation": "worktree"` so the agent works in an isolated git copy. If the agent breaks something, the worktree is discarded — main repo stays clean.
+5. Write `.sdlc/plan.json` using the Write tool
+6. Create TaskCreate checklist for user visibility (see Progress Tracking)
+7. Show plan summary, ask user to confirm
 
 **EXECUTE** (code dispatcher — NOT you):
 1. User runs `/sdlc execute` after confirming your plan
@@ -146,6 +147,7 @@ For M/L/XL: ask user to confirm before proceeding.
 | `acceptanceCriteria` | Array of concrete criteria |
 | `writablePath` | Domain path from config (e.g. "packages/api/") |
 | `testCommand` | Domain test command |
+| `isolation` | `"worktree"` for code changes (safe), `"none"` for read-only tasks |
 | `context` | **Actual code** — types, interfaces, patterns. NOT file paths. |
 | `status` | "pending" (dispatcher fills the rest) |
 | `maxAttempts` | Usually 3 |
